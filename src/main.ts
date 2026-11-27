@@ -13,16 +13,28 @@ app.innerHTML = `
     <div class="screen-transition" id="screen-transition"></div>
     <div class="title-screen" id="title-screen">
       <div class="title-backdrop">
+        <div class="title-sky-glow"></div>
         <div class="sun-haze"></div>
+        <div class="sun-disc"></div>
         <div class="cloud cloud-a"></div>
         <div class="cloud cloud-b"></div>
+        <div class="cloud cloud-c"></div>
         <div class="city city-far"></div>
+        <div class="city city-mid"></div>
         <div class="city city-near"></div>
+        <div class="utility-pole pole-a"></div>
+        <div class="utility-pole pole-b"></div>
         <div class="powerline line-a"></div>
         <div class="powerline line-b"></div>
+        <div class="powerline line-c"></div>
+        <div class="title-road"></div>
+        <div class="title-grain"></div>
       </div>
       <div class="title-vignette"></div>
+      <div class="title-cinematic-bars top"></div>
+      <div class="title-cinematic-bars bottom"></div>
       <div class="title-content">
+        <div class="title-location">SAITAMA / KAWAGOE &nbsp;·&nbsp; 07:04</div>
         <div class="title-kicker">A STORY AFTER THE LIGHT</div>
         <h1>AFTERNOVA</h1>
         <div class="title-rule"></div>
@@ -33,7 +45,8 @@ app.innerHTML = `
           <button class="title-item" data-index="2">SETTINGS</button>
         </nav>
         <div class="title-hint">↑ ↓ で選択　ENTER / TAP で決定</div>
-        <div class="title-version">AFTERNOVA // 0.1.0</div>
+        <div class="title-footer-left">© AFTERNOVA PROJECT</div>
+        <div class="title-version">VER. 0.1.0</div>
       </div>
     </div>
 
