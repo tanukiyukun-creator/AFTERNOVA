@@ -132,7 +132,7 @@ function changeScreen(next: Screen, after?: () => void) {
     screens[next].classList.remove("hidden");
     screen = next;
     if (after) after();
-  }, 180);
+  }, 520);
 }
 
 function setSelection(index: number) {
@@ -223,3 +223,507 @@ function tick(now: number) {
 }
 
 requestAnimationFrame(tick);
+
+
+// =========================================================
+// AFTERNOVA CORE PLAYABLE SLICE
+// Opening -> house exploration -> phone -> breakfast -> map
+// -> relationship choices -> evening notification -> battle
+// =========================================================
+
+type RuntimeScene = "bedroom" | "kitchen" | "hall" | "outside";
+type RuntimePhone = "messages" | "camera" | "map" | "sns" | "items" | "save" | "calls" | "search" | "music";
+
+interface RuntimeSave {
+  name: string;
+  gender: string;
+  scene: RuntimeScene;
+  gameMinutes: number;
+  phoneChecked: boolean;
+  managerReplied: boolean;
+  eveningNotification: boolean;
+  breakfastDone: boolean;
+  relationship: Record<string, number>;
+  inventory: string[];
+}
+
+let runtimeMounted = false;
+let runtimeScene: RuntimeScene = "bedroom";
+let runtimePhone: RuntimePhone = "messages";
+let phoneChecked = false;
+let managerReplied = false;
+let eveningNotification = false;
+let breakfastDone = false;
+let runtimeBattle = false;
+let enemyHp = 24;
+let playerHp = 30;
+let runtimeRelationships: Record<string, number> = {
+  "神谷 直人": 0,
+  "母": 0,
+  "ファミリーマート大宮店": 0
+};
+let runtimeInventory = ["スマートフォン", "学生証", "財布"];
+
+function runtimeTime() {
+  const total = Math.floor(gameMinutes) % 1440;
+  return `${String(Math.floor(total / 60)).padStart(2, "0")}:${String(total % 60).padStart(2, "0")}`;
+}
+
+function runtimeToast(text: string) {
+  const toast = document.createElement("div");
+  toast.className = "runtime-toast";
+  toast.textContent = text;
+  homeScreen.appendChild(toast);
+  window.setTimeout(() => toast.remove(), 2200);
+}
+
+function runtimeSave() {
+  const data: RuntimeSave = {
+    name: nameInput.value.trim() || "主人公",
+    gender: selectedGender,
+    scene: runtimeScene,
+    gameMinutes,
+    phoneChecked,
+    managerReplied,
+    eveningNotification,
+    breakfastDone,
+    relationship: runtimeRelationships,
+    inventory: runtimeInventory
+  };
+  localStorage.setItem("afternova-runtime-save", JSON.stringify(data));
+  runtimeToast("保存しました");
+}
+
+function runtimeLoad(): boolean {
+  const raw = localStorage.getItem("afternova-runtime-save");
+  if (!raw) {
+    runtimeToast("保存データがありません");
+    return false;
+  }
+  try {
+    const data = JSON.parse(raw) as RuntimeSave;
+    nameInput.value = data.name || "主人公";
+    selectedGender = data.gender || "";
+    runtimeScene = data.scene || "bedroom";
+    gameMinutes = data.gameMinutes || 424;
+    phoneChecked = Boolean(data.phoneChecked);
+    managerReplied = Boolean(data.managerReplied);
+    eveningNotification = Boolean(data.eveningNotification);
+    breakfastDone = Boolean(data.breakfastDone);
+    runtimeRelationships = data.relationship || runtimeRelationships;
+    runtimeInventory = data.inventory || runtimeInventory;
+    changeScreen("home", () => {
+      mountRuntime();
+      runtimeMode("explore");
+    });
+    return true;
+  } catch {
+    runtimeToast("保存データを読み込めませんでした");
+    return false;
+  }
+}
+
+function runtimeOverlayClose() {
+  homeScreen.querySelectorAll(".runtime-overlay").forEach((el) => el.remove());
+}
+
+function runtimeDialogue(
+  speaker: string,
+  text: string,
+  options: { label: string; action: () => void }[] = []
+) {
+  runtimeOverlayClose();
+  const overlay = document.createElement("div");
+  overlay.className = "runtime-overlay runtime-dialogue-overlay";
+  overlay.innerHTML = `
+    <div class="runtime-dialogue">
+      <div class="runtime-dialogue-name">${speaker}</div>
+      <div class="runtime-dialogue-text">${text}</div>
+      <div class="runtime-dialogue-options">
+        ${options.map((o, i) => `<button data-runtime-option="${i}">${o.label}</button>`).join("")}
+      </div>
+    </div>
+  `;
+  homeScreen.appendChild(overlay);
+
+  options.forEach((option, i) => {
+    const button = overlay.querySelector<HTMLButtonElement>(`[data-runtime-option="${i}"]`);
+    button?.addEventListener("click", () => {
+      overlay.remove();
+      option.action();
+    });
+  });
+
+  if (options.length === 0) {
+    overlay.addEventListener("click", () => overlay.remove());
+  }
+}
+
+function runtimePhone(page: RuntimePhone = runtimePhone) {
+  runtimeOverlayClose();
+  runtimePhone = page;
+  const overlay = document.createElement("div");
+  overlay.className = "runtime-overlay runtime-phone-overlay";
+  overlay.innerHTML = `
+    <div class="runtime-phone">
+      <header class="runtime-phone-header">
+        <button data-runtime-close>‹</button>
+        <div><b>AFTERNOVA PHONE</b><span>${runtimeTime()}</span></div>
+        <span class="runtime-signal">4G · 75%</span>
+      </header>
+      <div class="runtime-phone-content" id="runtime-phone-content"></div>
+      <nav class="runtime-phone-nav">
+        <button data-runtime-phone="messages">メッセージ</button>
+        <button data-runtime-phone="camera">カメラ</button>
+        <button data-runtime-phone="map">地図</button>
+        <button data-runtime-phone="sns">SNS</button>
+        <button data-runtime-phone="items">持ち物</button>
+        <button data-runtime-phone="save">セーブ</button>
+      </nav>
+    </div>
+  `;
+  homeScreen.appendChild(overlay);
+
+  const body = overlay.querySelector<HTMLDivElement>("#runtime-phone-content")!;
+  const close = () => overlay.remove();
+
+  if (page === "messages") {
+    body.innerHTML = `
+      <div class="runtime-page-kicker">MESSAGES</div>
+      <article class="runtime-message-thread">
+        <div class="runtime-message-head">ファミリーマート大宮店　店長</div>
+        <div class="runtime-message incoming">岡本くん、突然申し訳ないんだけど今日シフトはいれる？</div>
+        ${managerReplied ? '<div class="runtime-message outgoing">すみません、人違いではないでしょうか。</div><div class="runtime-message incoming">今日の18:42、忘れないでください</div>' : ""}
+        ${eveningNotification ? '<div class="runtime-message important">18:42　今日の18:42、忘れないでください</div>' : ""}
+      </article>
+      ${!phoneChecked ? '<div class="runtime-phone-actions"><button data-runtime-reply>返信する</button><button data-runtime-ignore>返信しない</button></div>' : ""}
+      <div class="runtime-message-head secondary">神谷 直人</div>
+      <div class="runtime-message incoming">おはよ。今日学校来る？</div>
+    `;
+  } else if (page === "camera") {
+    body.innerHTML = `
+      <div class="runtime-page-kicker">CAMERA</div>
+      <div class="runtime-camera"><span>●</span><i></i><b>川越・自宅</b></div>
+      <button class="runtime-wide-button" data-runtime-photo>撮影する</button>
+    `;
+  } else if (page === "map") {
+    body.innerHTML = `
+      <div class="runtime-page-kicker">KAWAGOE MAP</div>
+      <div class="runtime-mini-map"><span>川越駅</span><span>時の鐘</span><span>自宅</span><span>山村学園高校</span></div>
+      <button class="runtime-wide-button" data-runtime-open-map>大きな地図を開く</button>
+    `;
+  } else if (page === "sns") {
+    body.innerHTML = `
+      <div class="runtime-page-kicker">SNS</div>
+      <article class="runtime-sns"><b>kawagoe_today</b><p>朝の川越。今日もいつも通り。</p><small>07:01</small></article>
+      <article class="runtime-sns"><b>naoto_k</b><p>今日学校来る人いる？</p><small>07:03</small></article>
+    `;
+  } else if (page === "items") {
+    body.innerHTML = `
+      <div class="runtime-page-kicker">ITEMS</div>
+      <div class="runtime-items">${runtimeInventory.map((item) => `<div>${item}</div>`).join("")}</div>
+    `;
+  } else {
+    body.innerHTML = `
+      <div class="runtime-page-kicker">SAVE</div>
+      <p class="runtime-description">現在時刻・場所・選択・関係値を端末内に保存します。</p>
+      <button class="runtime-wide-button" data-runtime-save>この状態を保存</button>
+    `;
+  }
+
+  overlay.querySelectorAll<HTMLButtonElement>("[data-runtime-phone]").forEach((button) => {
+    button.addEventListener("click", () => runtimePhone(button.dataset.runtimePhone as RuntimePhone));
+  });
+  overlay.querySelector<HTMLButtonElement>("[data-runtime-close]")?.addEventListener("click", close);
+  overlay.querySelector<HTMLButtonElement>("[data-runtime-reply]")?.addEventListener("click", () => {
+    phoneChecked = true;
+    managerReplied = true;
+    runtimeRelationships["ファミリーマート大宮店"] += 1;
+    runtimePhone("messages");
+    runtimeDialogue("ファミリーマート大宮店　店長", "今日の18:42、忘れないでください。");
+  });
+  overlay.querySelector<HTMLButtonElement>("[data-runtime-ignore]")?.addEventListener("click", () => {
+    phoneChecked = true;
+    runtimePhone("messages");
+  });
+  overlay.querySelector<HTMLButtonElement>("[data-runtime-photo]")?.addEventListener("click", () => runtimeToast("写真を保存しました"));
+  overlay.querySelector<HTMLButtonElement>("[data-runtime-open-map]")?.addEventListener("click", () => {
+    overlay.remove();
+    runtimeMap();
+  });
+  overlay.querySelector<HTMLButtonElement>("[data-runtime-save]")?.addEventListener("click", runtimeSave);
+}
+
+function runtimeMap() {
+  runtimeOverlayClose();
+  const overlay = document.createElement("div");
+  overlay.className = "runtime-overlay runtime-map-overlay";
+  overlay.innerHTML = `
+    <div class="runtime-map">
+      <header><button data-runtime-map-close>‹</button><div><b>KAWAGOE</b><span>SAITAMA / CITY MAP</span></div><strong>${runtimeTime()}</strong></header>
+      <div class="runtime-map-canvas">
+        <div class="map-river"></div><div class="map-route route-a"></div><div class="map-route route-b"></div><div class="map-route route-c"></div>
+        <button class="runtime-map-pin p-home">自宅</button>
+        <button class="runtime-map-pin p-school">山村学園高校</button>
+        <button class="runtime-map-pin p-station">川越駅</button>
+        <button class="runtime-map-pin p-honkawagoe">本川越駅</button>
+        <button class="runtime-map-pin p-bell">時の鐘</button>
+        <button class="runtime-map-pin p-sweets">菓子屋横丁</button>
+      </div>
+      <div class="runtime-map-footer">現在地：${runtimeScene === "outside" ? "自宅付近" : "自宅"}</div>
+    </div>
+  `;
+  homeScreen.appendChild(overlay);
+  overlay.querySelector("[data-runtime-map-close]")?.addEventListener("click", () => overlay.remove());
+}
+
+function runtimeBattle() {
+  runtimeOverlayClose();
+  runtimeBattle = true;
+  enemyHp = 24;
+  playerHp = 30;
+  const overlay = document.createElement("div");
+  overlay.className = "runtime-overlay runtime-battle-overlay";
+  overlay.innerHTML = `
+    <div class="runtime-battle">
+      <div class="runtime-battle-top"><span>ANOMALY / 01</span><span>${runtimeTime()}</span></div>
+      <div class="runtime-battle-stage">
+        <div class="runtime-enemy"><div></div><b>名前のない違和感</b><i><em id="runtime-enemy-hp"></em></i></div>
+        <div class="runtime-player"><div></div><b>${nameInput.value.trim() || "主人公"}</b><i><em id="runtime-player-hp"></em></i></div>
+      </div>
+      <div class="runtime-battle-log" id="runtime-battle-log">それは、そこにいるはずのないものだった。</div>
+      <div class="runtime-battle-menu">
+        <button data-battle-action="attack">ATTACK</button>
+        <button data-battle-action="talk">TALK</button>
+        <button data-battle-action="item">ITEM</button>
+        <button data-battle-action="run">RUN</button>
+      </div>
+    </div>
+  `;
+  homeScreen.appendChild(overlay);
+  runtimeRenderBattle(overlay);
+  overlay.querySelectorAll<HTMLButtonElement>("[data-battle-action]").forEach((button) => {
+    button.addEventListener("click", () => runtimeBattleAction(button.dataset.battleAction || "run", overlay));
+  });
+}
+
+function runtimeRenderBattle(overlay: HTMLElement) {
+  const enemy = overlay.querySelector<HTMLElement>("#runtime-enemy-hp");
+  const player = overlay.querySelector<HTMLElement>("#runtime-player-hp");
+  if (enemy) enemy.style.width = `${Math.max(0, enemyHp / 24 * 100)}%`;
+  if (player) player.style.width = `${Math.max(0, playerHp / 30 * 100)}%`;
+}
+
+function runtimeBattleAction(action: string, overlay: HTMLElement) {
+  const log = overlay.querySelector<HTMLDivElement>("#runtime-battle-log")!;
+  if (action === "attack") {
+    const damage = 6 + Math.floor(Math.random() * 5);
+    enemyHp -= damage;
+    log.textContent = `${nameInput.value.trim() || "主人公"}の攻撃。\n${damage}のダメージ。`;
+  } else if (action === "talk") {
+    runtimeRelationships["名前のない違和感"] = (runtimeRelationships["名前のない違和感"] || 0) + 1;
+    log.textContent = "話しかけた。\nそれは、答えの代わりにこちらを見た。";
+  } else if (action === "item") {
+    playerHp = Math.min(30, playerHp + 8);
+    log.textContent = "小さな飴を口にした。\nHPが回復した。";
+  } else {
+    runtimeBattle = false;
+    overlay.remove();
+    runtimeRenderScene();
+    return;
+  }
+
+  if (enemyHp <= 0) {
+    log.textContent += "\n\n違和感は、朝の光の中へ消えた。";
+    runtimeBattle = false;
+    window.setTimeout(() => {
+      overlay.remove();
+      runtimeRenderScene();
+    }, 1200);
+    runtimeRenderBattle(overlay);
+    return;
+  }
+
+  const damage = 2 + Math.floor(Math.random() * 4);
+  playerHp -= damage;
+  log.textContent += `\n\n反応した。HP -${damage}`;
+  if (playerHp <= 0) {
+    playerHp = 30;
+    runtimeScene = "outside";
+    log.textContent += "\n\n気がつくと、自宅の近くに立っていた。";
+    runtimeBattle = false;
+    window.setTimeout(() => {
+      overlay.remove();
+      runtimeRenderScene();
+    }, 1200);
+  }
+  runtimeRenderBattle(overlay);
+}
+
+function runtimeSceneMarkup() {
+  const sceneText =
+    runtimeScene === "bedroom" ? "自宅・自室" :
+    runtimeScene === "kitchen" ? "自宅・キッチン" :
+    runtimeScene === "hall" ? "自宅・廊下" : "川越市・自宅付近";
+
+  let actions = "";
+  if (runtimeScene === "bedroom") {
+    actions = `
+      <button class="runtime-hotspot window" data-runtime-action="window">窓を見る</button>
+      <button class="runtime-hotspot kitchen" data-runtime-action="kitchen">キッチンへ</button>
+      <button class="runtime-hotspot hall" data-runtime-action="hall">廊下へ</button>
+    `;
+  } else if (runtimeScene === "kitchen") {
+    actions = `
+      <button class="runtime-hotspot mother" data-runtime-action="mother">母に話しかける</button>
+      <button class="runtime-hotspot breakfast" data-runtime-action="breakfast">朝食を食べる</button>
+      <button class="runtime-hotspot hall" data-runtime-action="hall">廊下へ</button>
+    `;
+  } else if (runtimeScene === "hall") {
+    actions = `
+      <button class="runtime-hotspot kitchen" data-runtime-action="kitchen">キッチンへ</button>
+      <button class="runtime-hotspot door" data-runtime-action="outside">玄関へ</button>
+    `;
+  } else {
+    actions = `
+      <button class="runtime-hotspot home" data-runtime-action="hall">自宅へ</button>
+      <button class="runtime-hotspot walk" data-runtime-action="map">川越を歩く</button>
+      <button class="runtime-hotspot anomaly" data-runtime-action="battle">違和感を調べる</button>
+    `;
+  }
+
+  return `
+    <div class="runtime-world runtime-${runtimeScene}">
+      <div class="runtime-sunlight"></div>
+      <div class="runtime-window"></div>
+      <div class="runtime-cityline"></div>
+      <div class="runtime-floor"></div>
+      <div class="runtime-furniture bed"></div>
+      <div class="runtime-furniture desk"></div>
+      <div class="runtime-kitchen-counter"></div>
+      <div class="runtime-character-silhouette"></div>
+      <div class="runtime-scene-label"><b>川越市</b><span>${sceneText}</span></div>
+      <div class="runtime-clock">${runtimeTime()}</div>
+      <div class="runtime-hotspots">${actions}</div>
+    </div>
+    <div class="runtime-bottom">
+      <div class="runtime-message">${runtimeScene === "outside" ? "いつもの街なのに、ほんの少しだけ何かがおかしい。" : "朝の静かな時間が流れている。"}</div>
+      <div class="runtime-bottom-actions">
+        <button data-runtime-phone-open>PHONE</button>
+        <button data-runtime-map-open>MAP</button>
+        <button data-runtime-save-open>SAVE</button>
+      </div>
+    </div>
+  `;
+}
+
+function runtimeRenderScene() {
+  runtimeOverlayClose();
+  homeScreen.innerHTML = runtimeSceneMarkup();
+  homeScreen.classList.add("runtime-home");
+  homeScreen.querySelector("[data-runtime-phone-open]")?.addEventListener("click", () => runtimePhone("messages"));
+  homeScreen.querySelector("[data-runtime-map-open]")?.addEventListener("click", runtimeMap);
+  homeScreen.querySelector("[data-runtime-save-open]")?.addEventListener("click", runtimeSave);
+
+  homeScreen.querySelectorAll<HTMLButtonElement>("[data-runtime-action]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const action = button.dataset.runtimeAction;
+      if (action === "window") {
+        runtimeDialogue("—", "窓の外には、川越の朝の街並みが見える。\nいつもと変わらない。……たぶん。");
+      } else if (action === "kitchen") {
+        runtimeScene = "kitchen"; runtimeRenderScene();
+      } else if (action === "hall") {
+        runtimeScene = "hall"; runtimeRenderScene();
+      } else if (action === "outside") {
+        runtimeScene = "outside"; runtimeRenderScene();
+      } else if (action === "mother") {
+        runtimeRelationships["母"] += 1;
+        runtimeDialogue("母", breakfastDone ? "今日は少し早いね。気をつけて行ってらっしゃい。" : "おはよう。朝ごはん、そこに置いてあるから。", [
+          { label: "「ありがとう」", action: () => { runtimeRelationships["母"] += 1; } },
+          { label: "黙っている", action: () => {} }
+        ]);
+      } else if (action === "breakfast") {
+        breakfastDone = true;
+        gameMinutes += 8;
+        runtimeDialogue("母", "……いただきます。");
+      } else if (action === "map") {
+        runtimeMap();
+      } else if (action === "battle") {
+        runtimeBattle();
+      }
+    });
+  });
+}
+
+function runtimeMode(mode: "opening" | "explore") {
+  runtimeOverlayClose();
+  if (mode === "opening") {
+    homeScreen.classList.remove("runtime-home");
+    homeScreen.innerHTML = `
+      <div class="runtime-opening">
+        <div class="runtime-opening-art">
+          <div class="runtime-opening-window"></div>
+          <div class="runtime-opening-bed"></div>
+          <div class="runtime-opening-desk"></div>
+          <div class="runtime-opening-light"></div>
+        </div>
+        <div class="runtime-opening-copy">
+          <span>川越市 · 自宅 / ${runtimeTime()}</span>
+          <h2>朝。</h2>
+          <p>${nameInput.value.trim() || "主人公"}は、ゆっくりと目を覚ました。</p>
+          <button data-runtime-wake>目を覚ます</button>
+        </div>
+      </div>
+    `;
+    homeScreen.querySelector("[data-runtime-wake]")?.addEventListener("click", () => runtimeMode("explore"));
+  } else {
+    runtimeRenderScene();
+  }
+}
+
+function mountRuntime() {
+  if (runtimeMounted) return;
+  runtimeMounted = true;
+  runtimeMode("opening");
+}
+
+// Extend the existing start flow without replacing the original screen system.
+nameStart.addEventListener("click", () => {
+  window.setTimeout(() => {
+    if (state !== undefined) {
+      runtimeMounted = false;
+      mountRuntime();
+    }
+  }, 620);
+});
+
+const runtimeNewGameButton = document.querySelector<HTMLButtonElement>("[data-index=\"0\"]");
+runtimeNewGameButton?.addEventListener("click", () => {
+  runtimeMounted = false;
+  window.setTimeout(() => mountRuntime(), 620);
+});
+
+const runtimeLoadButton = document.querySelector<HTMLButtonElement>("[data-index=\"1\"]");
+runtimeLoadButton?.addEventListener("click", () => {
+  window.setTimeout(() => runtimeLoad(), 50);
+});
+
+window.setInterval(() => {
+  if (!runtimeMounted || !homeScreen.classList.contains("hidden")) {
+    if (runtimeMounted) {
+      const clock = homeScreen.querySelector<HTMLElement>(".runtime-clock");
+      if (clock) clock.textContent = runtimeTime();
+    }
+  }
+  if (!eveningNotification && gameMinutes >= 18 * 60 + 42 && runtimeMounted) {
+    eveningNotification = true;
+    runtimeToast("18:42 — 新しい通知があります");
+    if (runtimeScene !== "outside") {
+      runtimeDialogue("通知", "18:42。スマートフォンが短く震えた。", [
+        { label: "確認する", action: () => runtimePhone("messages") },
+        { label: "あとで見る", action: () => {} }
+      ]);
+    }
+  }
+}, 250);
+
