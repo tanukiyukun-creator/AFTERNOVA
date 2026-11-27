@@ -1213,3 +1213,65 @@ button{
   .runtime-hotspot{min-height:34px;padding:6px 10px}
   .runtime-phone{height:96dvh}
 }
+
+
+.runtime-call-card{
+  padding:16px;
+  border:1px solid rgba(255,255,255,.09);
+  background:#111219;
+  margin-bottom:9px;
+  display:grid;
+  gap:7px;
+}
+.runtime-call-card b{font-size:12px}
+.runtime-call-card span{font-size:10px;color:#777}
+.runtime-call-card button{
+  justify-self:start;
+  min-height:38px;padding:8px 14px;
+  border:1px solid rgba(235,205,190,.3);
+  background:rgba(235,205,190,.06);
+  color:#eee;
+}
+.runtime-search{display:flex;gap:7px}
+.runtime-search input{
+  min-width:0;flex:1;height:44px;
+  border:1px solid rgba(255,255,255,.12);
+  background:#08090d;color:#fff;padding:0 12px;outline:none;
+}
+.runtime-search button{
+  border:1px solid rgba(255,255,255,.15);
+  background:#171820;color:#fff;padding:0 14px;
+}
+.runtime-search-result{
+  margin-top:12px;padding:15px;
+  min-height:100px;background:#111219;
+  color:#aaa;font-size:12px;line-height:1.8;
+  white-space:pre-line;
+}
+.runtime-player-card{
+  padding:22px;
+  border:1px solid rgba(255,255,255,.1);
+  background:#111219;
+  display:flex;flex-direction:column;align-items:center;gap:9px;
+}
+.runtime-player-card b{font-size:14px}
+.runtime-player-card span{font-size:10px;color:#777}
+.runtime-album-art{
+  width:min(220px,60vw);aspect-ratio:1;
+  background:
+    radial-gradient(circle at 70% 30%,rgba(255,225,194,.55),transparent 18%),
+    linear-gradient(145deg,#222d3b,#927b7b 55%,#d0ad9b);
+  box-shadow:0 20px 50px rgba(0,0,0,.4);
+}
+.runtime-player-card button{
+  margin-top:10px;width:100%;min-height:44px;
+  border:1px solid rgba(255,255,255,.14);
+  background:#181920;color:#fff;
+}
+@media (max-width:600px){
+  .runtime-phone-nav{
+    grid-template-columns:repeat(3,1fr);
+    max-height:138px;
+    overflow:auto;
+  }
+}
