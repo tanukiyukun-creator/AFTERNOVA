@@ -506,8 +506,13 @@ button{
   }
 
   .title-content h1{
-    font-size:clamp(40px, 13vw, 72px);
-    letter-spacing:.11em;
+    width:100%;
+    max-width:100%;
+    white-space:nowrap;
+    font-size:clamp(28px, 9vw, 72px);
+    letter-spacing:.045em;
+    margin-left:.045em;
+    line-height:.9;
   }
 
   .title-kicker{
@@ -559,7 +564,9 @@ button{
 
 @media (max-width:360px){
   .title-content h1{
-    font-size:38px;
+    font-size:30px;
+    letter-spacing:.035em;
+    margin-left:.035em;
   }
 
   .title-menu{
