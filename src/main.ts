@@ -379,6 +379,9 @@ function runtimePhone(page: RuntimePhone = runtimePhonePage) {
         <button data-runtime-phone="sns">SNS</button>
         <button data-runtime-phone="items">持ち物</button>
         <button data-runtime-phone="save">セーブ</button>
+        <button data-runtime-phone="calls">通話</button>
+        <button data-runtime-phone="search">検索</button>
+        <button data-runtime-phone="music">音楽</button>
       </nav>
     </div>
   `;
@@ -423,6 +426,37 @@ function runtimePhone(page: RuntimePhone = runtimePhonePage) {
       <div class="runtime-page-kicker">ITEMS</div>
       <div class="runtime-items">${runtimeInventory.map((item) => `<div>${item}</div>`).join("")}</div>
     `;
+  } else if (page === "calls") {
+    body.innerHTML = `
+      <div class="runtime-page-kicker">CALLS</div>
+      <article class="runtime-call-card">
+        <b>神谷 直人</b><span>不在着信　07:08</span>
+        <button data-runtime-call>折り返す</button>
+      </article>
+      <article class="runtime-call-card">
+        <b>母</b><span>最近の通話</span>
+        <button data-runtime-call-mother>電話する</button>
+      </article>
+    `;
+  } else if (page === "search") {
+    body.innerHTML = `
+      <div class="runtime-page-kicker">WEB SEARCH</div>
+      <div class="runtime-search">
+        <input id="runtime-search-input" placeholder="川越について検索" />
+        <button data-runtime-search>検索</button>
+      </div>
+      <div id="runtime-search-result" class="runtime-search-result">検索した内容がここに表示されます。</div>
+    `;
+  } else if (page === "music") {
+    body.innerHTML = `
+      <div class="runtime-page-kicker">MUSIC</div>
+      <div class="runtime-player-card">
+        <div class="runtime-album-art"></div>
+        <b>morning / 07:04</b>
+        <span>再生中</span>
+        <button data-runtime-music>▶ / ❚❚</button>
+      </div>
+    `;
   } else {
     body.innerHTML = `
       <div class="runtime-page-kicker">SAVE</div>
@@ -452,6 +486,23 @@ function runtimePhone(page: RuntimePhone = runtimePhonePage) {
     runtimeMap();
   });
   overlay.querySelector<HTMLButtonElement>("[data-runtime-save]")?.addEventListener("click", runtimeSave);
+  overlay.querySelector<HTMLButtonElement>("[data-runtime-call]")?.addEventListener("click", () => {
+    runtimeRelationships["神谷 直人"] += 1;
+    runtimeDialogue("神谷 直人", "お、起きてた？ 今日学校で話そ。");
+  });
+  overlay.querySelector<HTMLButtonElement>("[data-runtime-call-mother]")?.addEventListener("click", () => {
+    runtimeRelationships["母"] += 1;
+    runtimeDialogue("母", "どうしたの？");
+  });
+  overlay.querySelector<HTMLButtonElement>("[data-runtime-search]")?.addEventListener("click", () => {
+    const input = overlay.querySelector<HTMLInputElement>("#runtime-search-input");
+    const result = overlay.querySelector<HTMLDivElement>("#runtime-search-result");
+    const query = input?.value.trim() || "";
+    if (result) result.textContent = query ? `「${query}」についての検索結果。\n川越市内の情報が表示される。` : "検索ワードを入力してください。";
+  });
+  overlay.querySelector<HTMLButtonElement>("[data-runtime-music]")?.addEventListener("click", () => {
+    runtimeToast("音楽を切り替えました");
+  });
 }
 
 function runtimeMap() {
