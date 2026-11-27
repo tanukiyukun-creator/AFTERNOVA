@@ -172,6 +172,7 @@ function startOpening(){
 
 function renderRoom(){
   const world=$("#home-world");
+  world.querySelectorAll(".hall-scene,.kitchen-scene").forEach(el=>el.remove());
   world.dataset.room=room;
   roomName.textContent=room==="bedroom"?"自室":room==="hall"?"廊下":"キッチン";
   hint.textContent=room==="bedroom"?"窓・スマホ・ドアを調べられます":room==="hall"?"キッチンへ進めます":"母親が朝食を用意している";
