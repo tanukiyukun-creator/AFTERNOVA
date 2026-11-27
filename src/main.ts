@@ -63,13 +63,15 @@ app.innerHTML = `
     </section>
 
     <section class="home-screen hidden" id="home-screen">
-      <div class="home-world">
-        <div class="room-wall"></div>
-        <div class="window"><div class="window-sky"></div><div class="window-city"></div></div>
-        <div class="desk"></div>
-        <div class="bed"><div class="pillow"></div></div>
-        <div class="room-floor"></div>
-        <div class="player"></div>
+      <div class="home-world opening-bed-view">
+        <div class="opening-ai-image" aria-hidden="true"></div>
+        <div class="opening-ai-fallback" aria-hidden="true">
+          <div class="room-wall"></div>
+          <div class="window"><div class="window-sky"></div><div class="window-city"></div></div>
+          <div class="desk"></div>
+          <div class="bed"><div class="pillow"></div></div>
+          <div class="room-floor"></div>
+        </div>
       </div>
       <div class="home-top"><span>AFTERNOVA</span><span id="clock">07:04</span></div>
       <div class="home-caption"><strong>川越市</strong><span>自宅・自室</span></div>
