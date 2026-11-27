@@ -3,9 +3,10 @@ import "./style.css";
 const app = document.querySelector<HTMLDivElement>("#app");
 if (!app) throw new Error("App root was not found.");
 
-type Screen = "title" | "name" | "home";
+type Screen = "title" | "gender" | "name" | "home";
 let screen: Screen = "title";
 let titleSelection = 0;
+let selectedGender = "";
 
 app.innerHTML = `
   <main class="game">
@@ -35,9 +36,32 @@ app.innerHTML = `
       </div>
     </div>
 
+    <section class="gender-screen hidden" id="gender-screen">
+      <div class="creation-card">
+        <div class="eyebrow">NEW GAME / 01</div>
+        <h2>あなたについて</h2>
+        <p>主人公の性別を選択してください。</p>
+        <div class="gender-options">
+          <button class="gender-option" data-gender="男性">
+            <span class="gender-symbol">♂</span>
+            <span>男性</span>
+          </button>
+          <button class="gender-option" data-gender="女性">
+            <span class="gender-symbol">♀</span>
+            <span>女性</span>
+          </button>
+          <button class="gender-option" data-gender="その他">
+            <span class="gender-symbol">◇</span>
+            <span>その他</span>
+          </button>
+        </div>
+        <div class="creation-note">あとから変更できません</div>
+      </div>
+    </section>
+
     <section class="name-screen hidden" id="name-screen">
       <div class="name-card">
-        <div class="eyebrow">NEW GAME</div>
+        <div class="eyebrow">NEW GAME / 02</div>
         <h2>あなたの名前</h2>
         <p>この世界で呼ばれる名前を入力してください。</p>
         <input id="name-input" maxlength="12" autocomplete="off" placeholder="名前" />
@@ -66,9 +90,11 @@ app.innerHTML = `
 `;
 
 const titleScreen = document.querySelector<HTMLElement>("#title-screen")!;
+const genderScreen = document.querySelector<HTMLElement>("#gender-screen")!;
 const nameScreen = document.querySelector<HTMLElement>("#name-screen")!;
 const homeScreen = document.querySelector<HTMLElement>("#home-screen")!;
 const menuItems = [...document.querySelectorAll<HTMLButtonElement>(".title-item")];
+const genderOptions = [...document.querySelectorAll<HTMLButtonElement>(".gender-option")];
 const nameInput = document.querySelector<HTMLInputElement>("#name-input")!;
 const nameStart = document.querySelector<HTMLButtonElement>("#name-start")!;
 const openingText = document.querySelector<HTMLDivElement>("#opening-text")!;
@@ -79,10 +105,21 @@ function setSelection(index: number) {
 }
 
 function startNewGame() {
-  screen = "name";
+  screen = "gender";
   titleScreen.classList.add("hidden");
-  nameScreen.classList.remove("hidden");
-  window.setTimeout(() => nameInput.focus(), 80);
+  genderScreen.classList.remove("hidden");
+}
+
+function selectGender(gender: string) {
+  selectedGender = gender;
+  genderOptions.forEach((option) => option.classList.toggle("selected", option.dataset.gender === gender));
+
+  window.setTimeout(() => {
+    screen = "name";
+    genderScreen.classList.add("hidden");
+    nameScreen.classList.remove("hidden");
+    window.setTimeout(() => nameInput.focus(), 80);
+  }, 260);
 }
 
 function beginHome() {
@@ -101,6 +138,12 @@ menuItems.forEach((item) => {
   });
 });
 
+genderOptions.forEach((option) => {
+  option.addEventListener("click", () => {
+    selectGender(option.dataset.gender ?? "その他");
+  });
+});
+
 window.addEventListener("keydown", (event) => {
   if (screen === "title") {
     if (event.key === "ArrowUp" || event.key === "ArrowDown") {
@@ -109,6 +152,13 @@ window.addEventListener("keydown", (event) => {
     } else if (event.key === "Enter" && titleSelection === 0) {
       startNewGame();
     }
+    return;
+  }
+
+  if (screen === "gender") {
+    if (event.key === "1") selectGender("男性");
+    else if (event.key === "2") selectGender("女性");
+    else if (event.key === "3") selectGender("その他");
     return;
   }
 
