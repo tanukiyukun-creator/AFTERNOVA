@@ -249,7 +249,7 @@ interface RuntimeSave {
 
 let runtimeMounted = false;
 let runtimeScene: RuntimeScene = "bedroom";
-let runtimePhone: RuntimePhone = "messages";
+let runtimePhonePage: RuntimePhone = "messages";
 let phoneChecked = false;
 let managerReplied = false;
 let eveningNotification = false;
@@ -359,9 +359,9 @@ function runtimeDialogue(
   }
 }
 
-function runtimePhone(page: RuntimePhone = runtimePhone) {
+function runtimePhone(page: RuntimePhone = runtimePhonePage) {
   runtimeOverlayClose();
-  runtimePhone = page;
+  runtimePhonePage = page;
   const overlay = document.createElement("div");
   overlay.className = "runtime-overlay runtime-phone-overlay";
   overlay.innerHTML = `
@@ -690,10 +690,8 @@ function mountRuntime() {
 // Extend the existing start flow without replacing the original screen system.
 nameStart.addEventListener("click", () => {
   window.setTimeout(() => {
-    if (state !== undefined) {
-      runtimeMounted = false;
-      mountRuntime();
-    }
+    runtimeMounted = false;
+    mountRuntime();
   }, 620);
 });
 
