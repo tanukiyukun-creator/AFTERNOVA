@@ -34,8 +34,9 @@ app.innerHTML = `
 `;
 
 const canvas = document.querySelector<HTMLCanvasElement>("#world")!;
-const gl = canvas.getContext("webgl", { antialias: true, alpha: false });
-if (!gl) throw new Error("WebGL is not supported.");
+const glContext = canvas.getContext("webgl", { antialias: true, alpha: false });
+if (!glContext) throw new Error("WebGL is not supported.");
+const gl: WebGLRenderingContext = glContext;
 
 const vertexShaderSource = `
 attribute vec2 a_position;
