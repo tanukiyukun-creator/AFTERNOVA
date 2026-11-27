@@ -15,16 +15,11 @@ button{cursor:pointer}
 .cloud-a{width:55vw;height:11vw;left:-8vw;top:28%;transform:rotate(-4deg)}
 .cloud-b{width:48vw;height:9vw;right:-12vw;top:42%;transform:rotate(5deg)}
 .city{position:absolute;left:0;right:0;bottom:0}
-.city-far{height:25%;opacity:.48;background:
-  linear-gradient(90deg,transparent 0 4%,#39414c 4% 9%,transparent 9% 13%,#303943 13% 17%,transparent 17% 21%,#3a424c 21% 28%,transparent 28% 31%,#303842 31% 37%,transparent 37% 43%,#39414a 43% 47%,transparent 47% 53%,#343d47 53% 60%,transparent 60% 64%,#3a414a 64% 70%,transparent 70% 76%,#303842 76% 83%,transparent 83% 88%,#39414a 88% 94%,transparent 94%);
-  clip-path:polygon(0 35%,4% 35%,4% 20%,9% 20%,9% 43%,13% 43%,13% 28%,17% 28%,17% 45%,21% 45%,21% 14%,28% 14%,28% 38%,31% 38%,31% 24%,37% 24%,37% 43%,43% 43%,43% 17%,47% 17%,47% 40%,53% 40%,53% 27%,60% 27%,60% 43%,64% 43%,64% 19%,70% 19%,70% 42%,76% 42%,76% 12%,83% 12%,83% 39%,88% 39%,88% 22%,94% 22%,94% 42%,100% 42%,100% 100%,0 100%)}
-.city-near{height:35%;background:
-  linear-gradient(90deg,#171c24 0 8%,#20262f 8% 15%,#161b22 15% 24%,#242a31 24% 34%,#181d24 34% 44%,#232930 44% 53%,#171c23 53% 61%,#252b32 61% 72%,#171c23 72% 82%,#242a31 82% 91%,#171c23 91% 100%);
-  clip-path:polygon(0 31%,8% 31%,8% 18%,15% 18%,15% 38%,24% 38%,24% 24%,34% 24%,34% 41%,44% 41%,44% 13%,53% 13%,53% 37%,61% 37%,61% 20%,72% 20%,72% 42%,82% 42%,82% 15%,91% 15%,91% 36%,100% 36%,100% 100%,0 100%)}
+.city-far{height:25%;opacity:.48;background:linear-gradient(90deg,transparent 0 4%,#39414c 4% 9%,transparent 9% 13%,#303943 13% 17%,transparent 17% 21%,#3a424c 21% 28%,transparent 28% 31%,#303842 31% 37%,transparent 37% 43%,#39414a 43% 47%,transparent 47% 53%,#343d47 53% 60%,transparent 60% 64%,#3a414a 64% 70%,transparent 70% 76%,#303842 76% 83%,transparent 83% 88%,#39414a 88% 94%,transparent 94%);clip-path:polygon(0 35%,4% 35%,4% 20%,9% 20%,9% 43%,13% 43%,13% 28%,17% 28%,17% 45%,21% 45%,21% 14%,28% 14%,28% 38%,31% 38%,31% 24%,37% 24%,37% 43%,43% 43%,43% 17%,47% 17%,47% 40%,53% 40%,53% 27%,60% 27%,60% 43%,64% 43%,64% 19%,70% 19%,70% 42%,76% 42%,76% 12%,83% 12%,83% 39%,88% 39%,88% 22%,94% 22%,94% 42%,100% 42%,100% 100%,0 100%)}
+.city-near{height:35%;background:linear-gradient(90deg,#171c24 0 8%,#20262f 8% 15%,#161b22 15% 24%,#242a31 24% 34%,#181d24 34% 44%,#232930 44% 53%,#171c23 53% 61%,#252b32 61% 72%,#171c23 72% 82%,#242a31 82% 91%,#171c23 91% 100%);clip-path:polygon(0 31%,8% 31%,8% 18%,15% 18%,15% 38%,24% 38%,24% 24%,34% 24%,34% 41%,44% 41%,44% 13%,53% 13%,53% 37%,61% 37%,61% 20%,72% 20%,72% 42%,82% 42%,82% 15%,91% 15%,91% 36%,100% 36%,100% 100%,0 100%)}
 .powerline{position:absolute;height:1px;background:rgba(15,17,22,.65);transform-origin:left center}
 .line-a{width:120%;left:-4%;bottom:43%;transform:rotate(-4deg)}
 .line-b{width:120%;left:-2%;bottom:37%;transform:rotate(6deg)}
-
 .title-vignette{position:absolute;inset:0;background:radial-gradient(ellipse at 54% 44%,transparent 20%,rgba(0,0,0,.18) 55%,rgba(0,0,0,.76) 100%);pointer-events:none}
 .title-content{position:absolute;inset:0;display:flex;align-items:center;flex-direction:column;padding-top:13vh;text-align:center}
 .title-kicker{font-size:clamp(10px,1vw,14px);letter-spacing:.42em;color:rgba(245,235,229,.72);margin-left:.42em;text-shadow:0 2px 16px rgba(0,0,0,.55)}
@@ -38,6 +33,19 @@ button{cursor:pointer}
 .title-item.selected::before{width:22px}
 .title-hint{position:absolute;bottom:45px;font-size:10px;letter-spacing:.12em;color:rgba(255,255,255,.4)}
 .title-version{position:absolute;bottom:17px;right:22px;font-size:9px;letter-spacing:.16em;color:rgba(255,255,255,.3)}
+
+/* CHARACTER CREATION */
+.gender-screen{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 35%,#242431,#0a0a10 62%,#030406)}
+.creation-card{width:min(650px,calc(100% - 36px));padding:46px 42px;border:1px solid rgba(255,255,255,.12);background:rgba(10,11,17,.84);box-shadow:0 30px 100px rgba(0,0,0,.6);text-align:center;animation:creationIn .5s ease both}
+.creation-card h2{font-weight:400;font-size:32px;margin:0 0 10px}
+.creation-card p{font-size:13px;color:#aaa4ad;margin:0 0 30px}
+.gender-options{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.gender-option{min-height:150px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.025);color:rgba(244,240,245,.72);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;transition:.2s;position:relative}
+.gender-option:hover,.gender-option.selected{border-color:rgba(235,205,190,.6);background:rgba(235,205,190,.08);color:#fff;transform:translateY(-3px);box-shadow:0 12px 30px rgba(0,0,0,.25)}
+.gender-option.selected::after{content:"";position:absolute;left:20%;right:20%;bottom:14px;height:1px;background:rgba(235,205,190,.75)}
+.gender-symbol{font-family:Georgia,serif;font-size:38px;color:#cdb8ad}
+.creation-note{font-size:10px;color:#66636a;margin-top:20px;letter-spacing:.08em}
+@keyframes creationIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 
 /* NAME */
 .name-screen{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 35%,#20202d,#090a0f 65%,#030406)}
@@ -73,5 +81,6 @@ button{cursor:pointer}
 
 @media(max-width:600px){
 .title-content{padding-top:17vh}.title-menu{margin-top:7vh}.title-item{min-width:220px}
+.gender-options{grid-template-columns:1fr;gap:8px}.gender-option{min-height:72px;flex-direction:row;justify-content:flex-start;padding:0 24px}.gender-symbol{font-size:26px;width:34px}.creation-card{padding:32px 22px}
 .name-card{padding:30px 22px}.home-caption{left:18px;bottom:125px}
 }
