@@ -194,3 +194,418 @@ button.pressed{animation:buttonPress .22s ease both}
 .opening-bed-view .room-floor{
   opacity:.92;
 }
+
+
+/* =========================================================
+   DEVICE / ORIENTATION RESPONSIVE LAYER
+   Portrait + landscape / phone + tablet + desktop
+   ========================================================= */
+
+:root{
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+}
+
+html,body,#app,.game{
+  width:100%;
+  height:100%;
+  min-width:0;
+  min-height:0;
+}
+
+body{
+  -webkit-text-size-adjust:100%;
+  text-size-adjust:100%;
+  overscroll-behavior:none;
+}
+
+.game{
+  min-height:100dvh;
+  height:100dvh;
+  isolation:isolate;
+}
+
+button,
+input{
+  -webkit-tap-highlight-color:transparent;
+}
+
+button{
+  touch-action:manipulation;
+}
+
+/* ---------- TITLE: fluid in both orientations ---------- */
+
+.title-screen,
+.title-backdrop,
+.title-vignette,
+.title-content{
+  width:100%;
+  height:100%;
+  min-width:0;
+  min-height:0;
+}
+
+.title-content{
+  padding:
+    clamp(48px, 11dvh, 120px)
+    max(18px, calc(var(--safe-right) + 18px))
+    max(48px, calc(var(--safe-bottom) + 48px))
+    max(18px, calc(var(--safe-left) + 18px));
+}
+
+.title-location{
+  top:max(18px, calc(var(--safe-top) + 12px));
+  left:max(18px, calc(var(--safe-left) + 14px));
+  right:max(18px, calc(var(--safe-right) + 14px));
+  white-space:nowrap;
+}
+
+.title-content h1{
+  max-width:92vw;
+  font-size:clamp(42px, min(9.2vw, 16dvh), 144px);
+}
+
+.title-kicker{
+  max-width:90vw;
+  font-size:clamp(8px, min(1vw, 1.6dvh), 13px);
+}
+
+.title-sub{
+  font-size:clamp(8px, 1.2dvh, 10px);
+}
+
+.title-menu{
+  margin-top:clamp(24px, 7dvh, 72px);
+  width:min(360px, 88vw);
+}
+
+.title-item{
+  width:100%;
+  min-width:0;
+  min-height:46px;
+  padding:clamp(9px, 1.8dvh, 13px) 28px;
+  font-size:clamp(11px, 1.7dvh, 13px);
+}
+
+.title-hint{
+  bottom:max(18px, calc(var(--safe-bottom) + 18px));
+  max-width:90vw;
+  white-space:nowrap;
+}
+
+.title-footer-left{
+  left:max(18px, calc(var(--safe-left) + 12px));
+  bottom:max(10px, calc(var(--safe-bottom) + 8px));
+}
+
+.title-version{
+  right:max(18px, calc(var(--safe-right) + 12px));
+  bottom:max(10px, calc(var(--safe-bottom) + 8px));
+}
+
+.title-cinematic-bars{
+  height:clamp(8px, 2dvh, 22px);
+}
+
+/* ---------- CHARACTER CREATION ---------- */
+
+.gender-screen,
+.name-screen{
+  padding:
+    max(18px, calc(var(--safe-top) + 18px))
+    max(18px, calc(var(--safe-right) + 18px))
+    max(18px, calc(var(--safe-bottom) + 18px))
+    max(18px, calc(var(--safe-left) + 18px));
+  overflow:auto;
+  overscroll-behavior:contain;
+}
+
+.creation-card{
+  width:min(650px, 100%);
+  max-height:calc(100dvh - var(--safe-top) - var(--safe-bottom) - 36px);
+  overflow:auto;
+  padding:clamp(24px, 5dvh, 46px) clamp(20px, 5vw, 42px);
+}
+
+.creation-card h2{
+  font-size:clamp(24px, 4dvh, 32px);
+}
+
+.creation-card p{
+  font-size:clamp(12px, 1.8dvh, 13px);
+  margin-bottom:clamp(18px, 3dvh, 30px);
+}
+
+.gender-options{
+  width:100%;
+  gap:clamp(8px, 1.5vw, 12px);
+}
+
+.gender-option{
+  min-width:0;
+  min-height:clamp(82px, 17dvh, 150px);
+}
+
+.name-card{
+  width:min(500px, 100%);
+  max-height:calc(100dvh - var(--safe-top) - var(--safe-bottom) - 36px);
+  overflow:auto;
+  padding:clamp(24px, 5dvh, 42px) clamp(20px, 5vw, 42px);
+}
+
+.name-card h2{
+  font-size:clamp(24px, 4dvh, 30px);
+}
+
+.name-card input,
+.name-card button{
+  min-height:48px;
+}
+
+.name-card input{
+  font-size:16px;
+}
+
+/* ---------- HOME / GAMEPLAY HUD ---------- */
+
+.home-screen{
+  min-width:0;
+  min-height:0;
+}
+
+.home-world{
+  width:100%;
+  height:100%;
+  min-width:0;
+  min-height:0;
+}
+
+.opening-ai-image,
+.opening-ai-fallback{
+  width:100%;
+  height:100%;
+}
+
+.home-top{
+  top:max(14px, calc(var(--safe-top) + 8px));
+  left:max(16px, calc(var(--safe-left) + 10px));
+  right:max(16px, calc(var(--safe-right) + 10px));
+  font-size:clamp(9px, 1.5dvh, 11px);
+}
+
+.home-caption{
+  left:max(18px, calc(var(--safe-left) + 12px));
+  bottom:clamp(108px, 17dvh, 130px);
+  max-width:80vw;
+}
+
+.home-caption strong{
+  font-size:clamp(15px, 2.4dvh, 17px);
+}
+
+.home-dialogue{
+  left:max(12px, calc(var(--safe-left) + 8px));
+  right:max(12px, calc(var(--safe-right) + 8px));
+  bottom:max(10px, calc(var(--safe-bottom) + 10px));
+  padding:clamp(14px, 2.5dvh, 18px) clamp(14px, 2.8vw, 22px);
+  max-height:30dvh;
+  overflow:auto;
+}
+
+.dialogue-text{
+  font-size:clamp(14px, 2.2dvh, 15px);
+}
+
+/* ---------- LANDSCAPE PHONES / SHORT SCREENS ---------- */
+
+@media (orientation:landscape) and (max-height:600px){
+  .title-content{
+    padding-top:max(42px, calc(var(--safe-top) + 7dvh));
+  }
+
+  .title-content h1{
+    font-size:clamp(38px, 14dvh, 82px);
+    margin-top:10px;
+  }
+
+  .title-rule{
+    margin:12px 0 7px;
+    width:min(150px, 28vw);
+  }
+
+  .title-menu{
+    margin-top:clamp(10px, 3dvh, 22px);
+    gap:0;
+  }
+
+  .title-item{
+    min-height:34px;
+    padding:6px 24px;
+    font-size:11px;
+  }
+
+  .title-hint{
+    display:none;
+  }
+
+  .title-location{
+    font-size:7px;
+  }
+
+  .title-footer-left,
+  .title-version{
+    bottom:max(7px, calc(var(--safe-bottom) + 4px));
+  }
+
+  .creation-card,
+  .name-card{
+    max-height:calc(100dvh - 20px);
+    padding-top:18px;
+    padding-bottom:18px;
+  }
+
+  .creation-card p,
+  .creation-note,
+  .name-card p,
+  .name-note{
+    margin-top:6px;
+    margin-bottom:10px;
+  }
+
+  .gender-options{
+    grid-template-columns:repeat(3,1fr);
+  }
+
+  .gender-option{
+    min-height:60px;
+    padding:8px 10px;
+    gap:7px;
+  }
+
+  .gender-symbol{
+    font-size:24px;
+  }
+
+  .home-caption{
+    bottom:100px;
+  }
+
+  .home-dialogue{
+    max-height:26dvh;
+  }
+}
+
+/* ---------- PORTRAIT PHONES ---------- */
+
+@media (orientation:portrait) and (max-width:600px){
+  .title-content{
+    padding-top:clamp(72px, 14dvh, 130px);
+  }
+
+  .title-content h1{
+    font-size:clamp(40px, 13vw, 72px);
+    letter-spacing:.11em;
+  }
+
+  .title-kicker{
+    letter-spacing:.32em;
+    margin-left:.32em;
+  }
+
+  .title-sub{
+    letter-spacing:.28em;
+    margin-left:.28em;
+  }
+
+  .title-menu{
+    margin-top:clamp(28px, 7dvh, 58px);
+    width:min(300px, 86vw);
+  }
+
+  .title-item{
+    min-height:48px;
+    padding:12px 22px;
+  }
+
+  .title-item.selected::before,
+  .title-item.selected::after{
+    width:20px;
+  }
+
+  .gender-options{
+    grid-template-columns:1fr;
+  }
+
+  .gender-option{
+    min-height:64px;
+    flex-direction:row;
+    justify-content:flex-start;
+    padding:0 20px;
+  }
+
+  .creation-card{
+    text-align:center;
+  }
+
+  .opening-ai-image{
+    background-position:center center;
+  }
+}
+
+/* ---------- VERY NARROW / SMALL DEVICES ---------- */
+
+@media (max-width:360px){
+  .title-content h1{
+    font-size:38px;
+  }
+
+  .title-menu{
+    width:92vw;
+  }
+
+  .title-item{
+    font-size:10px;
+    letter-spacing:.18em;
+  }
+
+  .creation-card,
+  .name-card{
+    width:100%;
+    padding-left:16px;
+    padding-right:16px;
+  }
+}
+
+/* ---------- LARGE TABLETS / DESKTOP ---------- */
+
+@media (min-width:900px) and (min-height:700px){
+  .title-content h1{
+    font-size:clamp(90px, 9vw, 144px);
+  }
+
+  .title-menu{
+    margin-top:clamp(48px, 7vh, 80px);
+  }
+
+  .gender-screen,
+  .name-screen{
+    overflow:hidden;
+  }
+}
+
+/* Respect devices with a very wide or very tall aspect ratio. */
+@media (min-aspect-ratio:21/9){
+  .title-content{
+    padding-left:12vw;
+    padding-right:12vw;
+  }
+}
+
+@media (max-aspect-ratio:3/4) and (min-width:601px){
+  .title-content h1{
+    font-size:clamp(54px, 10vw, 96px);
+  }
+}
