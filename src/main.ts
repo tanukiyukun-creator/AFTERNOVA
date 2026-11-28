@@ -20,8 +20,9 @@ app.innerHTML=`
   <div class="fx-noise"></div>
   <section id="title" class="scene title">
     <div class="title-sky"></div><div class="title-moon"></div>
-    <div class="title-city far"></div><div class="title-city near"></div>
-    <div class="title-rain"></div>
+    <div class="title-cloud cloud-a"></div><div class="title-cloud cloud-b"></div>
+    <div class="title-city far"></div><div class="title-city mid"></div><div class="title-city near"></div>
+    <div class="title-stars"></div><div class="title-rain"></div>
     <div class="title-copy">
       <div class="micro">AN ORIGINAL STORY / 01:17 AM</div>
       <h1>AFTERNOVA</h1>
@@ -45,12 +46,12 @@ app.innerHTML=`
   <section id="world" class="scene hidden">
     <div class="world-hud"><span>AFTERNOVA</span><span id="time">06:42</span></div>
     <div id="world-art" class="world-art">
-      <div class="room-back"></div>
-      <div class="window"><div class="sky-reflection"></div><div class="city-mini"></div></div>
+      <div class="room-back"><div class="room-ceiling-light"></div><div class="room-wall-art"></div></div>
+      <div class="window"><div class="window-glass"><div class="sky-reflection"></div><div class="city-mini"></div><div class="window-light"></div></div><span></span></div>
       <div class="lamp"></div>
-      <div class="desk"></div>
-      <div class="bed"></div>
-      <div class="floor-glow"></div>
+      <div class="desk"><div class="desk-top"></div><div class="desk-drawer"></div><div class="desk-leg left"></div><div class="desk-leg right"></div></div>
+      <div class="bed"><div class="bed-head"></div><div class="blanket"></div><div class="pillow"></div></div>
+      <div class="floor-glow"></div><div class="floor-lines"></div>
       <div id="player" class="hero">
         <div class="shadow"></div><div class="legs"><i></i><i></i></div>
         <div class="body"></div><div class="head"></div><div class="hair"></div>
@@ -69,10 +70,10 @@ app.innerHTML=`
   </section>
 
   <section id="battle" class="scene hidden">
-    <div class="battle-bg"><div class="stars"></div><div class="horizon"></div></div>
+    <div class="battle-bg"><div class="stars"></div><div class="battle-vignette"></div><div class="horizon"></div><div class="battle-floor"></div></div>
     <div class="battle-top"><span>UNKNOWN / 01</span><span>THREAT LEVEL : ?</span></div>
     <div class="enemy">
-      <div class="enemy-glow"></div><div class="enemy-shape"><i></i><b></b></div>
+      <div class="enemy-glow"></div><div class="enemy-ring"></div><div class="enemy-shape"><i></i><b></b><em></em></div>
       <div class="enemy-name">THE LISTENER</div>
     </div>
     <div class="battle-box">
