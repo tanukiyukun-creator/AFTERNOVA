@@ -1,7 +1,6 @@
 import "./style.css";
 
-type Scene = "title" | "intro" | "world" | "battle";
-type Choice = "quiet" | "answer";
+let scene:Scene="title";
 let choice:Choice="quiet";
 let dialogueIndex=0;
 let hp=24;
