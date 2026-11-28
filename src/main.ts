@@ -75,7 +75,6 @@ let playerX=800,playerY=600;
 let moving=false,walkTime=0;
 let lastMoveTime=performance.now();
 let dialogueTimer:number|undefined;
-let battleTurn=0;
 
 function resizeCanvas(){
   const dpr=Math.min(window.devicePixelRatio||1,2);
