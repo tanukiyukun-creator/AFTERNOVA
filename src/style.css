@@ -964,3 +964,24 @@ button{
     height:180px;
   }
 }
+
+/* FINAL: joystick is a completely invisible touch target */
+.virtual-joystick,
+.virtual-joystick .joystick-ring,
+.virtual-joystick .joystick-knob{
+  background:transparent !important;
+  background-image:none !important;
+  border:0 !important;
+  box-shadow:none !important;
+  outline:0 !important;
+  backdrop-filter:none !important;
+  -webkit-backdrop-filter:none !important;
+  opacity:0 !important;
+}
+.virtual-joystick::before,
+.virtual-joystick::after,
+.joystick-ring::before,
+.joystick-ring::after{
+  content:none !important;
+  display:none !important;
+}
