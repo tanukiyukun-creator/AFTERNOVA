@@ -2,16 +2,10 @@ import "./style.css";
 
 type Scene = "title" | "intro" | "world" | "battle";
 type Choice = "quiet" | "answer";
-let scene:Scene="title";
 let choice:Choice="quiet";
 let dialogueIndex=0;
-let battleTurn=0;
 let hp=24;
-let playerX=50;
-let playerY=66;
-let moving=false;
 let raf=0;
-
 
 const app=document.querySelector<HTMLDivElement>("#app");
 if(!app) throw new Error("app");
@@ -359,7 +353,6 @@ touch.onpointermove=e=>{
 };
 ["pointerup","pointercancel","lostpointercapture"].forEach(x=>touch.addEventListener(x,()=>{down=false;pid=-1}));
 
-let battleTurn=0;
 function battleMessage(text:string){$("#battle-message").textContent=text;}
 document.querySelectorAll<HTMLButtonElement>(".commands button").forEach(b=>b.onclick=()=>{
   const cmd=b.dataset.cmd;
