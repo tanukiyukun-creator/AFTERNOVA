@@ -668,3 +668,144 @@ button{
 @media(orientation:landscape) and (max-height:600px){
   .phone-shell{height:96dvh;width:min(380px,55vw)}.home-location{bottom:92px}.interaction-hint{bottom:90px}.home-dialogue{max-height:30dvh}
 }
+
+
+/* ===== UNDERTALE-LIKE TOP-DOWN EXPLORATION ===== */
+.topdown-world{
+  background:#17151a;
+  overflow:hidden;
+  image-rendering:auto;
+}
+.topdown-room{
+  position:absolute;
+  inset:0;
+  overflow:hidden;
+  background:#80787a;
+}
+.topdown-room::before{
+  content:"";
+  position:absolute;
+  inset:6% 5% 8%;
+  border:12px solid #29262b;
+  box-shadow:0 0 0 3px rgba(255,255,255,.05),0 25px 70px rgba(0,0,0,.35);
+  pointer-events:none;
+}
+.bedroom-map{
+  background:
+    linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px),
+    linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),
+    #9d9294;
+  background-size:48px 48px;
+}
+.room-ceiling{position:absolute;inset:0 0 72%;background:linear-gradient(135deg,#aaa0a2,#91878a);opacity:.75}
+.window-tile{
+  position:absolute;left:16%;top:10%;width:22%;height:20%;
+  border:9px solid #302d31;background:linear-gradient(#a9c2d5 0 60%,#77737a 60%);
+  box-shadow:0 10px 25px rgba(0,0,0,.25);z-index:2;
+  color:rgba(255,255,255,.55);display:grid;place-items:center;font-size:9px;letter-spacing:.15em;
+}
+.bed-tile{
+  position:absolute;right:10%;top:13%;width:31%;height:27%;
+  border-radius:12px 12px 7px 7px;background:linear-gradient(135deg,#e0d8d9,#b9afb3);
+  border:5px solid #5d5156;box-shadow:0 15px 25px rgba(0,0,0,.22);z-index:2;
+  display:grid;place-items:center;color:#71686c;font-size:9px;letter-spacing:.2em;
+}
+.bed-tile::before{content:"";position:absolute;left:5%;top:6%;width:38%;height:32%;background:#f0e9e8;border-radius:8px}
+.desk-tile{
+  position:absolute;left:9%;bottom:16%;width:28%;height:13%;
+  background:#573f39;border:5px solid #392b29;border-radius:4px;z-index:2;
+  color:#bbaaa3;display:flex;align-items:center;justify-content:center;font-size:9px;letter-spacing:.15em;
+}
+.phone-pickup{
+  position:absolute;right:8%;top:-24px;padding:5px 8px;background:#202126;border:1px solid #777;color:#eee;font-size:8px;cursor:pointer;
+}
+.door-tile{
+  position:absolute;left:48%;bottom:6%;width:14%;height:16%;
+  background:linear-gradient(90deg,#433b3d,#2d292c);border:5px solid #272327;z-index:2;
+  display:grid;place-items:center;color:#bdb5b5;font-size:8px;letter-spacing:.12em;cursor:pointer;
+}
+.rug{
+  position:absolute;left:39%;top:45%;width:28%;height:28%;
+  background:rgba(112,91,96,.5);border:3px solid rgba(70,55,60,.55);border-radius:4px;
+}
+.hall-map{
+  background:
+    linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px),
+    #8c8587;
+  background-size:52px 52px;
+}
+.hall-wall{position:absolute;left:0;right:0;top:0;height:19%;background:#625c60;border-bottom:7px solid #393438}
+.hall-runner{position:absolute;left:31%;right:31%;top:19%;bottom:0;background:linear-gradient(90deg,#625156,#776166 50%,#625156);border-left:7px solid #463b3f;border-right:7px solid #463b3f}
+.hall-picture{position:absolute;top:7%;width:12%;height:8%;background:#4a4548;border:4px solid #28262a}
+.hall-picture.p1{left:13%}.hall-picture.p2{right:13%}
+.door-tile.back{left:9%;bottom:9%;width:18%;height:20%}
+.door-tile.kitchen{left:auto;right:9%;bottom:9%;width:18%;height:20%}
+.kitchen-map{background:
+  linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px),
+  linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),
+  #a99f9a;background-size:48px 48px;
+}
+.kitchen-wall{position:absolute;inset:0 0 73%;background:linear-gradient(#c9c0bb,#b3a8a4);border-bottom:8px solid #665c5c}
+.kitchen-counter{position:absolute;left:7%;right:7%;top:20%;height:14%;background:#5a504d;border:6px solid #393334;box-shadow:0 12px 25px #0003}
+.kitchen-table-top{position:absolute;left:28%;right:28%;bottom:18%;height:19%;background:#765b4c;border:8px solid #493b37;border-radius:5px;box-shadow:0 18px 30px #0004}
+.mother-character{position:absolute;left:48%;top:40%;width:54px;height:92px;z-index:4;background:#554d62;border-radius:18px 18px 8px 8px;box-shadow:0 8px 18px #0004}
+.mother-head{position:absolute;left:9px;top:-25px;width:36px;height:36px;border-radius:50%;background:#c7afa4}
+.mother-character span{position:absolute;left:50%;top:45%;transform:translate(-50%,-50%);font-size:8px;color:#eee}
+.kitchen-door{position:absolute;left:8%;bottom:8%;width:18%;height:19%;background:#3d3537;border:5px solid #282326;display:grid;place-items:center;color:#ccc;font-size:8px;cursor:pointer}
+.player-character{
+  position:absolute;z-index:12;width:42px;height:68px;transform:translate(-50%,-50%);
+  filter:drop-shadow(0 7px 7px rgba(0,0,0,.3));
+  pointer-events:none;
+}
+.player-shadow{
+  position:absolute;left:3px;bottom:-4px;width:36px;height:11px;border-radius:50%;background:rgba(0,0,0,.32);
+}
+.player-head{
+  position:absolute;left:9px;top:0;width:24px;height:25px;border-radius:50%;background:#d7bcb0;z-index:3;
+  box-shadow:inset -3px -2px 0 rgba(100,65,60,.12);
+}
+.player-hair{
+  position:absolute;left:7px;top:-3px;width:28px;height:16px;border-radius:15px 15px 7px 7px;background:#29262a;z-index:4;
+}
+.player-body{
+  position:absolute;left:8px;top:23px;width:26px;height:28px;border-radius:6px 6px 4px 4px;background:#303747;z-index:2;
+}
+.player-arm,.player-leg{position:absolute;background:#d0b4aa;border-radius:6px;z-index:1;transform-origin:top center}
+.player-arm{top:27px;width:7px;height:23px}.player-arm.left{left:4px}.player-arm.right{right:4px}
+.player-leg{top:49px;width:8px;height:18px;background:#242733}.player-leg.left{left:10px}.player-leg.right{right:10px}
+.player-character.female .player-hair{
+  left:4px;top:-4px;width:34px;height:28px;border-radius:17px 17px 11px 11px;
+}
+.player-character.female .player-body{background:#343b50}
+.player-name-tag{
+  position:absolute;left:50%;top:-22px;transform:translateX(-50%);
+  white-space:nowrap;font-size:8px;color:rgba(255,255,255,.72);text-shadow:0 2px 5px #000;opacity:.8;
+}
+.player-character.walking .player-arm.left{animation:walkArm .18s infinite alternate}
+.player-character.walking .player-arm.right{animation:walkArm .18s infinite alternate-reverse}
+.player-character.walking .player-leg.left{animation:walkLeg .18s infinite alternate}
+.player-character.walking .player-leg.right{animation:walkLeg .18s infinite alternate-reverse}
+@keyframes walkArm{from{transform:rotate(16deg)}to{transform:rotate(-16deg)}}
+@keyframes walkLeg{from{transform:rotate(-10deg)}to{transform:rotate(10deg)}}
+.touch-controls{
+  position:absolute;z-index:30;right:18px;bottom:112px;display:none;flex-direction:column;align-items:center;gap:4px;
+  filter:drop-shadow(0 8px 18px rgba(0,0,0,.25));
+}
+.touch-controls>div{display:flex;gap:4px}
+.touch-controls button{
+  width:44px;height:44px;border:1px solid rgba(255,255,255,.16);border-radius:8px;
+  background:rgba(10,10,14,.58);backdrop-filter:blur(8px);color:#eee;font-size:16px;
+}
+.touch-controls button:active{transform:scale(.92);background:rgba(255,255,255,.12)}
+@media(max-width:800px),(pointer:coarse){
+  .touch-controls{display:flex}
+  .interaction-hint{right:18px;bottom:175px;max-width:180px;line-height:1.6}
+  .player-character{width:38px;height:62px}
+}
+@media(max-width:600px){
+  .topdown-room::before{inset:5% 3% 7%;border-width:8px}
+  .touch-controls{right:12px;bottom:145px}
+  .touch-controls button{width:40px;height:40px}
+  .home-location{bottom:105px}
+  .home-dialogue{bottom:max(8px,calc(var(--safe-bottom) + 8px))}
+}
