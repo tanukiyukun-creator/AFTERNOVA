@@ -809,3 +809,116 @@ button{
   .home-location{bottom:105px}
   .home-dialogue{bottom:max(8px,calc(var(--safe-bottom) + 8px))}
 }
+
+
+/* ===== MOBILE JOYSTICK / VISUAL POLISH ===== */
+.virtual-joystick{
+  position:absolute;
+  z-index:35;
+  left:max(22px,calc(var(--safe-left) + 18px));
+  bottom:max(92px,calc(var(--safe-bottom) + 92px));
+  width:118px;height:118px;
+  display:none;
+  place-items:center;
+  touch-action:none;
+  user-select:none;
+}
+.joystick-ring{
+  position:relative;
+  width:112px;height:112px;border-radius:50%;
+  background:
+    radial-gradient(circle at 35% 30%,rgba(255,255,255,.13),transparent 28%),
+    radial-gradient(circle,rgba(13,15,21,.72) 0 47%,rgba(255,255,255,.06) 48% 50%,rgba(8,9,13,.55) 51% 100%);
+  border:1px solid rgba(255,255,255,.16);
+  box-shadow:0 16px 40px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.1);
+  backdrop-filter:blur(12px);
+}
+.joystick-ring::before{
+  content:"";
+  position:absolute;inset:13px;border-radius:50%;
+  border:1px solid rgba(255,255,255,.055);
+}
+.joystick-knob{
+  position:absolute;left:50%;top:50%;
+  width:52px;height:52px;margin:-26px;
+  border-radius:50%;
+  background:
+    radial-gradient(circle at 35% 28%,rgba(255,255,255,.3),rgba(255,255,255,.08) 35%,rgba(17,19,27,.88) 70%);
+  border:1px solid rgba(255,255,255,.22);
+  box-shadow:0 8px 20px rgba(0,0,0,.4),inset 0 1px 2px rgba(255,255,255,.18);
+  transition:transform .08s ease-out;
+  will-change:transform;
+}
+.virtual-joystick:active .joystick-ring{transform:scale(.98)}
+.virtual-joystick:active .joystick-knob{box-shadow:0 5px 14px rgba(0,0,0,.5),inset 0 1px 2px rgba(255,255,255,.2)}
+
+.topdown-world{
+  background:
+    radial-gradient(circle at 50% 38%,rgba(255,244,225,.08),transparent 34%),
+    linear-gradient(180deg,#242126,#121217);
+}
+.topdown-room::after{
+  content:"";
+  position:absolute;inset:0;pointer-events:none;z-index:10;
+  background:
+    radial-gradient(ellipse at center,transparent 42%,rgba(5,5,9,.18) 78%,rgba(3,3,6,.48) 100%),
+    linear-gradient(180deg,rgba(255,255,255,.035),transparent 20%,rgba(0,0,0,.1));
+}
+.topdown-room::before{
+  inset:4% 4% 7%;
+  border:10px solid #242127;
+  box-shadow:0 0 0 1px rgba(255,255,255,.08),0 30px 90px rgba(0,0,0,.5),inset 0 0 50px rgba(0,0,0,.18);
+  z-index:8;
+}
+.bedroom-map{
+  background:
+    radial-gradient(circle at 70% 25%,rgba(255,225,205,.12),transparent 25%),
+    linear-gradient(90deg,rgba(55,43,48,.12) 1px,transparent 1px),
+    linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
+    linear-gradient(135deg,#9c9295,#7c7479);
+  background-size:auto,52px 52px,52px 52px,auto;
+}
+.hall-map{
+  background:
+    radial-gradient(circle at 50% 22%,rgba(255,228,201,.18),transparent 35%),
+    linear-gradient(90deg,#777075,#9a9094 50%,#6e686d);
+}
+.kitchen-map{
+  background:
+    radial-gradient(circle at 52% 36%,rgba(255,232,204,.2),transparent 30%),
+    linear-gradient(135deg,#b0a5a1,#8e8584);
+}
+.bed-tile,.desk-tile,.window-tile,.door-tile,.kitchen-counter,.kitchen-table-top{
+  box-shadow:0 18px 32px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.08);
+}
+.player-character{
+  width:48px;height:76px;
+  transform:translate(-50%,-58%);
+  filter:drop-shadow(0 9px 8px rgba(0,0,0,.38));
+}
+.player-head{width:27px;height:27px;left:10.5px}
+.player-hair{left:8px;width:31px}
+.player-body{left:9px;top:25px;width:30px;height:31px}
+.player-arm{top:29px}
+.player-leg{top:54px;height:20px}
+.player-name-tag{
+  font-size:9px;
+  padding:3px 7px;
+  border:1px solid rgba(255,255,255,.08);
+  background:rgba(5,6,10,.34);
+  border-radius:4px;
+  backdrop-filter:blur(5px);
+}
+.home-top,.home-location,.interaction-hint,.phone-button{filter:drop-shadow(0 3px 8px rgba(0,0,0,.45))}
+@media(max-width:800px),(pointer:coarse){
+  .virtual-joystick{display:grid}
+  .touch-controls{display:none!important}
+}
+@media(max-width:600px){
+  .virtual-joystick{left:max(14px,calc(var(--safe-left) + 10px));bottom:max(88px,calc(var(--safe-bottom) + 88px));width:104px;height:104px}
+  .joystick-ring{width:100px;height:100px}
+  .joystick-knob{width:46px;height:46px;margin:-23px}
+}
+@media(orientation:landscape) and (max-height:600px){
+  .virtual-joystick{bottom:max(18px,calc(var(--safe-bottom) + 18px));left:max(18px,calc(var(--safe-left) + 18px))}
+}
