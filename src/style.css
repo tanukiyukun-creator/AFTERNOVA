@@ -985,3 +985,60 @@ button{
   content:none !important;
   display:none !important;
 }
+
+/* ===== 2026-11-28 GAMEPLAY POLISH ===== */
+.move-touch-zone{
+  position:absolute;
+  z-index:35;
+  right:0;
+  bottom:0;
+  width:min(42vw,420px);
+  height:min(58vh,520px);
+  background:transparent !important;
+  border:0 !important;
+  outline:0 !important;
+  box-shadow:none !important;
+  opacity:0 !important;
+  touch-action:none;
+  user-select:none;
+  -webkit-user-select:none;
+}
+@media (pointer:coarse), (max-width:800px){
+  .move-touch-zone{display:block}
+}
+@media (pointer:fine) and (min-width:801px){
+  .move-touch-zone{display:none}
+}
+
+/* Slower, more natural walking: the character should look like walking, not running. */
+.player-character.walking .player-arm.left{animation:walkArmSlow .42s ease-in-out infinite alternate}
+.player-character.walking .player-arm.right{animation:walkArmSlow .42s ease-in-out infinite alternate-reverse}
+.player-character.walking .player-leg.left{animation:walkLegSlow .42s ease-in-out infinite alternate}
+.player-character.walking .player-leg.right{animation:walkLegSlow .42s ease-in-out infinite alternate-reverse}
+@keyframes walkArmSlow{
+  from{transform:rotate(8deg)}
+  to{transform:rotate(-8deg)}
+}
+@keyframes walkLegSlow{
+  from{transform:rotate(-6deg)}
+  to{transform:rotate(6deg)}
+}
+
+/* Softer, more premium room treatment */
+.topdown-room{
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.035);
+}
+.topdown-room::after{
+  background:
+    radial-gradient(ellipse at 50% 45%,transparent 34%,rgba(5,5,9,.12) 72%,rgba(3,3,6,.42) 100%),
+    linear-gradient(180deg,rgba(255,255,255,.045),transparent 24%,rgba(0,0,0,.12));
+}
+.bed-tile,.desk-tile,.window-tile,.door-tile,.kitchen-counter,.kitchen-table-top{
+  transition:filter .25s ease,transform .25s ease,box-shadow .25s ease;
+}
+.bed-tile:hover,.desk-tile:hover,.window-tile:hover,.door-tile:hover,.kitchen-counter:hover,.kitchen-table-top:hover{
+  filter:brightness(1.045);
+}
+.player-character{
+  transition:left .11s linear,top .11s linear;
+}
