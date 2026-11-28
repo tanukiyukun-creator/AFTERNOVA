@@ -204,3 +204,156 @@ function bindMoveButtons(){
   });
 }
 
+
+
+function bindWorldActions(){
+  document.querySelectorAll<HTMLElement>("[data-action]").forEach(el=>{
+    el.onclick=()=>handleAction(el.dataset.action||"");
+  });
+}
+
+function handleAction(action:string){
+  if(phoneOpen)return;
+  if(action==="phone"){openPhone();return;}
+  if(action==="look-window"){
+    showDialogue("—","いつもの川越の朝。……なのに、なぜか少しだけ遠く見える。");
+    return;
+  }
+  if(action==="bed"){
+    showDialogue("—","まだ眠気が残っている。今日は学校がある。");
+    return;
+  }
+  if(action==="hall"){
+    room="hall"; playerX=50; playerY=78; renderRoom();
+    showDialogue("—","廊下へ出た。");
+    return;
+  }
+  if(action==="kitchen"){
+    room="kitchen"; playerX=50; playerY=76; renderRoom();
+    showDialogue("母","おはよう。朝ごはん、できてるよ。",()=>{
+      breakfastDone=true;
+      showDialogue(playerName,"うん。",()=>dialogue.classList.add("hidden"));
+    });
+    return;
+  }
+  if(action==="bedroom"){
+    room="bedroom"; playerX=50; playerY=78; renderRoom();
+    return;
+  }
+}
+
+function openPhone(){
+  phoneOpen=true;
+  phoneOverlay.classList.remove("hidden");
+  renderPhone();
+}
+function closePhone(){
+  phoneOpen=false;
+  phoneOverlay.classList.add("hidden");
+}
+
+function renderPhone(){
+  const tab=phoneTab;
+  const body=tab==="messages"?`
+    <div class="phone-title">メッセージ</div>
+    <article class="message-card">
+      <div class="message-from">ファミリーマート大宮店　店長</div>
+      <div class="message-time">07:03</div>
+      <p>岡本くん、突然申し訳ないんだけど今日シフトはいれる？</p>
+      ${messageReplied
+        ? "<div class='message-reply'>返信済み</div>"
+        : `<div class="message-actions"><button data-reply="yes">返信する</button><button data-reply="no">無視する</button></div>`}
+    </article>`
+  :tab==="camera"?`<div class="phone-title">カメラ</div><div class="camera-preview"><div>CAMERA</div><span>川越 / 自室</span></div>`
+  :tab==="map"?`<div class="phone-title">川越市</div><div class="map-preview"><div class="map-road r1"></div><div class="map-road r2"></div><div class="map-pin">● 自宅</div><small>現在地：川越市</small></div>`
+  :tab==="items"?`<div class="phone-title">所持品</div><div class="item-grid"><div>スマートフォン</div><div>学生証</div><div>家の鍵</div><div>財布</div></div>`
+  :`<div class="phone-title">セーブ</div><div class="save-card"><strong>AFTERNOVA / SLOT 01</strong><span>${playerName} · ${formatTime()} · ${roomName.textContent}</span><button id="save-game">この状態を保存</button></div>`;
+  phoneContent.innerHTML=body;
+
+  phoneContent.querySelectorAll<HTMLButtonElement>("[data-reply]").forEach(b=>b.onclick=()=>{
+    messageReplied=true;
+    renderPhone();
+    showDialogue("—",b.dataset.reply==="yes"?"返信した。":"返信せず、画面を閉じた。");
+  });
+
+  const save=$("#save-game");
+  save?.addEventListener("click",()=>{
+    localStorage.setItem("afternova-save",JSON.stringify({
+      playerName,selectedGender,room,gameMinutes,breakfastDone,messageReplied,playerX,playerY
+    }));
+    press(save);
+  });
+}
+
+function formatTime(){
+  const t=Math.floor(gameMinutes)%1440;
+  return `${String(Math.floor(t/60)).padStart(2,"0")}:${String(t%60).padStart(2,"0")}`;
+}
+
+menuItems.forEach(b=>b.onclick=()=>{
+  const i=Number(b.dataset.index||0);
+  setTitleSelection(i);
+  if(i===0)startNewGame();
+  else press(b);
+});
+
+genderOptions.forEach(b=>b.onclick=()=>{
+  const g=b.dataset.gender;
+  if(g==="男性"||g==="女性")selectGender(g,b);
+});
+
+nameStart.onclick=beginHome;
+
+$("#phone-button").onclick=openPhone;
+$("#phone-close").onclick=closePhone;
+
+document.querySelectorAll<HTMLButtonElement>(".phone-nav button").forEach(b=>b.onclick=()=>{
+  phoneTab=(b.dataset.tab||"messages") as PhoneTab;
+  renderPhone();
+});
+
+window.addEventListener("keydown",e=>{
+  if(screen==="title"){
+    if(e.key==="ArrowUp"||e.key==="ArrowDown"){
+      e.preventDefault();
+      setTitleSelection(titleSelection+(e.key==="ArrowDown"?1:-1));
+    }else if(e.key==="Enter"&&titleSelection===0){
+      startNewGame();
+    }
+  }else if(screen==="gender"){
+    if(e.key==="1")selectGender("男性",genderOptions[0]);
+    if(e.key==="2")selectGender("女性",genderOptions[1]);
+  }else if(screen==="name"&&e.key==="Enter"){
+    e.preventDefault();
+    beginHome();
+  }else if(screen==="home"){
+    if(e.key==="Escape"&&phoneOpen){
+      closePhone();
+      return;
+    }
+    if(!phoneOpen){
+      const step=3;
+      if(e.key==="w"||e.key==="W"||e.key==="ArrowUp")movePlayer(0,-step);
+      if(e.key==="s"||e.key==="S"||e.key==="ArrowDown")movePlayer(0,step);
+      if(e.key==="a"||e.key==="A"||e.key==="ArrowLeft")movePlayer(-step,0);
+      if(e.key==="d"||e.key==="D"||e.key==="ArrowRight")movePlayer(step,0);
+    }
+  }
+});
+
+nameInput.addEventListener("input",()=>{
+  nameInput.value=nameInput.value.replace(/[<>]/g,"");
+});
+
+let last=performance.now();
+function tick(now:number){
+  const dt=Math.min(now-last,100);
+  last=now;
+  if(screen==="home"&&!phoneOpen){
+    gameMinutes+=(dt/60000)*24*60;
+    const clock=$("#clock");
+    clock.textContent=formatTime();
+  }
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
