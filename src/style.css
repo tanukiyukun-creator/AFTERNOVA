@@ -922,3 +922,45 @@ button{
 @media(orientation:landscape) and (max-height:600px){
   .virtual-joystick{bottom:max(18px,calc(var(--safe-bottom) + 18px));left:max(18px,calc(var(--safe-left) + 18px))}
 }
+
+/* ===== INVISIBLE RIGHT-SIDE JOYSTICK ===== */
+.virtual-joystick{
+  left:auto !important;
+  right:max(12px,calc(var(--safe-right) + 12px));
+  bottom:max(72px,calc(var(--safe-bottom) + 72px));
+  width:190px;
+  height:190px;
+  display:none;
+  background:transparent;
+  border:0;
+  box-shadow:none;
+  backdrop-filter:none;
+  opacity:1;
+}
+.virtual-joystick .joystick-ring{
+  display:none;
+}
+.virtual-joystick .joystick-knob{
+  display:none;
+}
+@media(max-width:800px),(pointer:coarse){
+  .virtual-joystick{
+    display:block;
+  }
+}
+@media(max-width:600px){
+  .virtual-joystick{
+    right:max(8px,calc(var(--safe-right) + 8px));
+    bottom:max(64px,calc(var(--safe-bottom) + 64px));
+    width:170px;
+    height:170px;
+  }
+}
+@media(orientation:landscape) and (max-height:600px){
+  .virtual-joystick{
+    right:max(14px,calc(var(--safe-right) + 14px));
+    bottom:max(14px,calc(var(--safe-bottom) + 14px));
+    width:180px;
+    height:180px;
+  }
+}
