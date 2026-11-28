@@ -1,6 +1,9 @@
 import "./style.css";
 
-let scene:Scene="title";
+type Scene = "title" | "intro" | "world" | "battle";
+type Choice = "quiet" | "direct";
+
+let scene: Scene = "title";
 let choice:Choice="quiet";
 let dialogueIndex=0;
 let hp=24;
@@ -63,11 +66,11 @@ const screens={title:$("#title"),intro:$("#intro"),world:$("#world"),battle:$("#
 const dialogue=$("#dialogue"),speaker=$("#speaker"),dialogueText=$("#dialogue-text");
 const canvas=$("#game-canvas") as HTMLCanvasElement;
 const ctx=canvas.getContext("2d")!;
-let scene:Scene="title";
 let playerX=800,playerY=600;
 let moving=false,walkTime=0;
 let lastMoveTime=performance.now();
 let dialogueTimer:number|undefined;
+let battleTurn=0;
 
 function resizeCanvas(){
   const dpr=Math.min(window.devicePixelRatio||1,2);
