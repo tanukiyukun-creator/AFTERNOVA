@@ -111,7 +111,9 @@ function go(id:"intro"|"world"|"battle"){
 }
 function start(){
   go("intro");
-  setTimeout(()=>$("#intro").classList.add("arrive"),30);
+  const intro=$("#intro");
+  intro.classList.remove("arrive");
+  requestAnimationFrame(()=>intro.classList.add("arrive"));
 }
 $("#start").onclick=start;
 $("#intro-next").onclick=()=>{
