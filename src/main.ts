@@ -52,10 +52,7 @@ app.innerHTML=`
       <div class="desk"><div class="desk-top"></div><div class="desk-drawer"></div><div class="desk-leg left"></div><div class="desk-leg right"></div></div>
       <div class="bed"><div class="bed-head"></div><div class="blanket"></div><div class="pillow"></div></div>
       <div class="floor-glow"></div><div class="floor-lines"></div>
-      <div id="player" class="hero">
-        <div class="shadow"></div><div class="legs"><i></i><i></i></div>
-        <div class="body"></div><div class="head"></div><div class="hair"></div>
-      </div>
+      <canvas id="hero-canvas" class="hero-canvas" width="240" height="320" aria-label="主人公"></canvas>
       <div class="object-note" id="note">机の上の紙</div>
       <div class="exit-door" id="door">廊下</div>
       <div class="touch-zone" id="touch-zone"></div>
@@ -93,6 +90,10 @@ app.innerHTML=`
 const $=<T extends HTMLElement>(s:string)=>document.querySelector<T>(s)!;
 const screens={title:$("#title"),intro:$("#intro"),world:$("#world"),battle:$("#battle")};
 const dialogue=$("#dialogue"), speaker=$("#speaker"), dialogueText=$("#dialogue-text");
+const heroCanvas=$("#hero-canvas") as HTMLCanvasElement;
+const heroCtx=heroCanvas.getContext("2d")!;
+let heroPhase=0;
+let lastMoveTime=performance.now();
 let timer:number|undefined;
 
 function show(name:string,text:string,next?:()=>void){
@@ -119,14 +120,44 @@ $("#intro-next").onclick=()=>{
 };
 
 function updatePlayer(){
-  const p=$("#player");
-  p.style.left=playerX+"%";p.style.top=playerY+"%";p.classList.toggle("walking",moving);
+  heroCanvas.style.left=playerX+"%";
+  heroCanvas.style.top=playerY+"%";
+}
+function roundRect(ctx:CanvasRenderingContext2D,x:number,y:number,w:number,h:number,r:number){
+  const rr=Math.min(r,w/2,h/2);ctx.beginPath();ctx.moveTo(x+rr,y);ctx.arcTo(x+w,y,x+w,y+h,rr);ctx.arcTo(x+w,y+h,x,y+h,rr);ctx.arcTo(x,y+h,x,y,rr);ctx.arcTo(x,y,x+w,y,rr);ctx.closePath();
+}
+function drawHero(now:number){
+  const ctx=heroCtx;ctx.clearRect(0,0,240,320);
+  const walking=moving && now-lastMoveTime<260;
+  const bob=walking?Math.sin(heroPhase)*3:Math.sin(now/900)*.7;
+  const leg=walking?Math.sin(heroPhase)*10:0;
+  ctx.save();ctx.translate(120,238+bob);
+  ctx.fillStyle="rgba(0,0,0,.34)";ctx.beginPath();ctx.ellipse(0,35,48,11,0,0,Math.PI*2);ctx.fill();
+  ctx.save();ctx.translate(-14+leg*.25,10);ctx.rotate(leg*.025);
+  const lg=ctx.createLinearGradient(0,0,0,62);lg.addColorStop(0,"#303747");lg.addColorStop(1,"#111722");
+  ctx.fillStyle=lg;roundRect(ctx,-11,0,22,60,8);ctx.fill();
+  ctx.fillStyle="#0c1018";roundRect(ctx,-13,49,25,10,5);ctx.fill();ctx.restore();
+  ctx.save();ctx.translate(14-leg*.25,10);ctx.rotate(-leg*.025);
+  ctx.fillStyle="#202736";roundRect(ctx,-11,0,22,60,8);ctx.fill();ctx.fillStyle="#0c1018";roundRect(ctx,-12,49,25,10,5);ctx.fill();ctx.restore();
+  const body=ctx.createLinearGradient(-34,-75,34,-10);body.addColorStop(0,"#596986");body.addColorStop(.42,"#35435e");body.addColorStop(1,"#171f31");
+  ctx.fillStyle=body;roundRect(ctx,-34,-76,68,76,15);ctx.fill();
+  ctx.fillStyle="rgba(190,205,235,.22)";roundRect(ctx,-23,-62,46,3,2);ctx.fill();
+  ctx.fillStyle="#151b29";roundRect(ctx,-42,-68,13,52,7);ctx.fill();roundRect(ctx,29,-68,13,52,7);ctx.fill();
+  ctx.fillStyle="#d7b7ad";ctx.beginPath();ctx.ellipse(0,-101,34,39,0,0,Math.PI*2);ctx.fill();
+  const skin=ctx.createRadialGradient(-8,-112,4,8,-96,38);skin.addColorStop(0,"#f4d8cb");skin.addColorStop(1,"#ae817f");ctx.fillStyle=skin;ctx.beginPath();ctx.ellipse(0,-101,34,39,0,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle="#171820";ctx.beginPath();ctx.moveTo(-35,-104);ctx.quadraticCurveTo(-34,-146,0,-149);ctx.quadraticCurveTo(36,-146,38,-108);ctx.quadraticCurveTo(20,-126,8,-130);ctx.quadraticCurveTo(-8,-113,-35,-104);ctx.fill();
+  ctx.fillStyle="#2a2933";ctx.beginPath();ctx.moveTo(-34,-116);ctx.quadraticCurveTo(-28,-130,-10,-134);ctx.quadraticCurveTo(-1,-125,-7,-112);ctx.quadraticCurveTo(-20,-113,-34,-116);ctx.fill();
+  ctx.fillStyle="#191923";ctx.beginPath();ctx.ellipse(-12,-98,3.5,5,0,0,Math.PI*2);ctx.ellipse(12,-98,3.5,5,0,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle="rgba(255,255,255,.65)";ctx.beginPath();ctx.arc(-13,-100,1.2,0,Math.PI*2);ctx.arc(11,-100,1.2,0,Math.PI*2);ctx.fill();
+  ctx.strokeStyle="rgba(92,54,60,.55)";ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,-89,8,.15,Math.PI-.15);ctx.stroke();
+  ctx.fillStyle="rgba(255,255,255,.18)";roundRect(ctx,-29,-65,5,38,3);ctx.fill();
+  ctx.restore();
 }
 function move(dx:number,dy:number){
   if(scene!=="world"||!dialogue.classList.contains("hidden"))return;
   playerX=Math.max(8,Math.min(92,playerX+dx));
   playerY=Math.max(16,Math.min(82,playerY+dy));
-  moving=true;updatePlayer();
+  moving=true;lastMoveTime=performance.now();heroPhase+=Math.PI/2;updatePlayer();
   clearTimeout((move as any).t);
   (move as any).t=setTimeout(()=>{moving=false;updatePlayer()},180);
 }
@@ -177,6 +208,7 @@ document.querySelectorAll<HTMLButtonElement>(".commands button").forEach(b=>b.on
 let lastFrame=performance.now();
 function loop(now:number){
   const dt=Math.min(100,now-lastFrame);lastFrame=now;
+  if(scene==="world")drawHero(now);
   if(scene==="world"){
     const t=$("#time");
     const base=6*60+42+Math.floor(performance.now()/10000);
