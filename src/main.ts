@@ -55,7 +55,6 @@ app.innerHTML = `
       <div class="gender-options">
         <button class="gender-option" data-gender="男性"><span class="gender-symbol">♂</span><span>男性</span></button>
         <button class="gender-option" data-gender="女性"><span class="gender-symbol">♀</span><span>女性</span></button>
-        <button class="gender-option" data-gender="その他"><span class="gender-symbol">◇</span><span>その他</span></button>
       </div>
       <div class="creation-note">この選択は主人公のデザインに反映されます</div>
     </div>
@@ -71,18 +70,7 @@ app.innerHTML = `
   </section>
 
   <section class="home-screen hidden" id="home-screen">
-    <div class="home-world" id="home-world">
-      <div class="opening-ai-image" aria-hidden="true"></div>
-      <div class="opening-ai-fallback" aria-hidden="true">
-        <div class="room-wall"></div><div class="window"><div class="window-sky"></div><div class="window-city"></div></div>
-        <div class="desk"></div><div class="bed"><div class="pillow"></div></div><div class="room-floor"></div>
-      </div>
-      <div class="room-object object-window" data-action="look-window"><span>窓</span></div>
-      <div class="room-object object-phone" data-action="phone"><span>スマホ</span></div>
-      <div class="room-object object-door" data-action="hall"><span>ドア</span></div>
-      <div class="room-object object-bed" data-action="bed"><span>ベッド</span></div>
-      <div class="home-atmosphere"></div>
-    </div>
+    <div class="home-world topdown-world" id="home-world"></div>
 
     <div class="home-top"><span>AFTERNOVA</span><span id="clock">07:04</span></div>
     <div class="home-location"><strong id="room-name">自室</strong><span>川越市 / 自宅</span></div>
