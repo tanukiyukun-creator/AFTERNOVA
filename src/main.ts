@@ -169,7 +169,7 @@ function renderRoom(){
     `<div class="topdown-room hall-map"><div class="hall-wall"></div><div class="hall-runner"></div><div class="hall-picture p1"></div><div class="hall-picture p2"></div><div class="door-tile back" data-action="bedroom"><span>自室</span></div><div class="door-tile kitchen" data-action="kitchen"><span>キッチン</span></div></div>` :
     `<div class="topdown-room kitchen-map"><div class="kitchen-wall"></div><div class="kitchen-counter"></div><div class="kitchen-table-top"></div><div class="mother-character"><div class="mother-head"></div><span>母</span></div><div class="kitchen-door" data-action="hall">廊下</div></div>`;
   world.innerHTML=roomMarkup+characterMarkup()+
-    `<div class="touch-controls" aria-label="移動操作"><button data-move="up">▲</button><div><button data-move="left">◀</button><button data-move="down">▼</button><button data-move="right">▶</button></div></div>`;
+    `<div class="virtual-joystick" id="virtual-joystick" aria-label="移動スティック"><div class="joystick-ring"><div class="joystick-knob" id="joystick-knob"></div></div></div>`;
   updateCharacter();
   bindWorldActions();
   bindMoveButtons();
@@ -198,10 +198,34 @@ function movePlayer(dx:number,dy:number){
   (movePlayer as any)._timer=window.setTimeout(()=>{moving=false;updateCharacter();},130);
 }
 function bindMoveButtons(){
-  document.querySelectorAll<HTMLButtonElement>("[data-move]").forEach(b=>b.onclick=()=>{
-    const d=b.dataset.move;
-    if(d==="up")movePlayer(0,-3); if(d==="down")movePlayer(0,3); if(d==="left")movePlayer(-3,0); if(d==="right")movePlayer(3,0);
-  });
+  const stick=document.querySelector<HTMLElement>("#virtual-joystick");
+  const knob=document.querySelector<HTMLElement>("#joystick-knob");
+  if(!stick||!knob)return;
+  let active=false;
+  let pointerId=-1;
+  const max=38;
+  const update=(clientX:number,clientY:number)=>{
+    const r=stick.getBoundingClientRect();
+    const cx=r.left+r.width/2, cy=r.top+r.height/2;
+    let x=clientX-cx, y=clientY-cy;
+    const len=Math.hypot(x,y);
+    if(len>max){x=x/len*max;y=y/len*max;}
+    knob.style.transform=`translate3d(${x}px,${y}px,0)`;
+    const nx=x/max, ny=y/max;
+    if(Math.hypot(nx,ny)>.18) movePlayer(nx*2.4,ny*2.4);
+  };
+  const end=()=>{
+    active=false; pointerId=-1;
+    knob.style.transform="translate3d(0,0,0)";
+  };
+  stick.onpointerdown=e=>{
+    active=true; pointerId=e.pointerId; stick.setPointerCapture(e.pointerId);
+    update(e.clientX,e.clientY);
+  };
+  stick.onpointermove=e=>{if(active&&e.pointerId===pointerId)update(e.clientX,e.clientY);};
+  stick.onpointerup=end;
+  stick.onpointercancel=end;
+  stick.onlostpointercapture=end;
 }
 
 
