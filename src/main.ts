@@ -190,23 +190,138 @@ function drawRoom(t:number){
   ctx.setTransform(1,0,0,1,0,0);
 }
 function drawHero(t:number,x:number,y:number){
-  const c=ctx,walking=moving&&t-lastMoveTime<220;const bob=walking?Math.sin(walkTime)*5:Math.sin(t/850)*1.2;const leg=walking?Math.sin(walkTime)*14:0;
-  c.save();c.translate(x,y+bob);
-  c.fillStyle="rgba(0,0,0,.4)";c.beginPath();c.ellipse(0,45,55,13,0,0,Math.PI*2);c.fill();
-  c.save();c.translate(-17+leg*.28,5);c.rotate(leg*.02);c.fillStyle="#252a38";rounded(c,-12,0,24,67,8);c.fillStyle="#0c1018";rounded(c,-15,56,29,12,6);c.restore();
-  c.save();c.translate(17-leg*.28,5);c.rotate(-leg*.02);c.fillStyle="#202532";rounded(c,-12,0,24,67,8);c.fillStyle="#0c1018";rounded(c,-14,56,29,12,6);c.restore();
-  const body=c.createLinearGradient(-42,-95,42,-10);body.addColorStop(0,"#657794");body.addColorStop(.45,"#3b4a66");body.addColorStop(1,"#171f31");c.fillStyle=body;rounded(c,-42,-96,84,92,17);c.fill();
-  c.fillStyle="rgba(210,220,245,.18)";rounded(c,-28,-80,56,4,2);c.fill();
-  c.fillStyle="#161c2a";rounded(c,-50,-82,16,62,8);c.fill();rounded(c,34,-82,16,62,8);c.fill();
-  const skin=c.createRadialGradient(-10,-135,3,12,-115,48);skin.addColorStop(0,"#f3d8ca");skin.addColorStop(1,"#ae827f");c.fillStyle=skin;c.beginPath();c.ellipse(0,-125,41,46,0,0,Math.PI*2);c.fill();
-  c.fillStyle="#171820";c.beginPath();c.moveTo(-42,-129);c.quadraticCurveTo(-40,-177,0,-181);c.quadraticCurveTo(42,-177,45,-132);c.quadraticCurveTo(22,-153,8,-157);c.quadraticCurveTo(-8,-139,-42,-129);c.fill();
-  c.fillStyle="#2a2933";c.beginPath();c.moveTo(-41,-142);c.quadraticCurveTo(-32,-161,-12,-166);c.quadraticCurveTo(-2,-155,-9,-139);c.quadraticCurveTo(-25,-138,-41,-142);c.fill();
-  c.fillStyle="#191923";c.beginPath();c.ellipse(-15,-122,4,6,0,0,Math.PI*2);c.ellipse(15,-122,4,6,0,0,Math.PI*2);c.fill();
-  c.fillStyle="rgba(255,255,255,.7)";c.beginPath();c.arc(-16,-124,1.5,0,Math.PI*2);c.arc(14,-124,1.5,0,Math.PI*2);c.fill();
-  c.strokeStyle="rgba(92,54,60,.6)";c.lineWidth=2;c.beginPath();c.arc(0,-111,9,.15,Math.PI-.15);c.stroke();
-  c.fillStyle="rgba(255,255,255,.2)";rounded(c,-35,-80,6,45,3);c.fill();c.restore();
+  // Procedural sprite sheet: four facing directions, idle + two walk poses.
+  // The sprite is drawn at a stable world scale so animation never changes collision size.
+  const c=ctx;
+  const dir=(window as any).__heroDir||"down";
+  const walking=moving&&t-lastMoveTime<220;
+  const phase=walking?Math.floor((walkTime%(Math.PI*2))/(Math.PI*2/4)):0;
+  const bob=walking?[0,-1.5,0,1.5][phase]:Math.sin(t/900)*.7;
+  const step=walking?Math.sin(walkTime)*7:0;
+  const sway=walking?Math.sin(walkTime)*1.6:0;
+
+  c.save();
+  c.translate(x,y+bob);
+  c.scale(1.0,1.0);
+
+  // Ground shadow
+  c.fillStyle="rgba(0,0,0,.38)";
+  c.beginPath();c.ellipse(0,45,52,12,0,0,Math.PI*2);c.fill();
+
+  // Back-facing hair silhouette
+  if(dir==="up"){
+    c.fillStyle="#12131b";
+    rounded(c,-42,-170,84,92,28);c.fill();
+    c.fillStyle="#252633";
+    rounded(c,-33,-162,66,68,22);c.fill();
+    drawBody(c,step,sway,true);
+    c.fillStyle="#10121a";rounded(c,-25,-113,50,70,18);c.fill();
+    drawBackHair(c);
+    drawShoes(c,step);
+    c.restore();return;
+  }
+
+  drawShoes(c,step);
+  drawBody(c,step,sway,false);
+
+  // arms
+  c.save();
+  c.translate(-42,-66);c.rotate(-.035+step*.008);
+  const armL=c.createLinearGradient(0,0,0,58);armL.addColorStop(0,"#536682");armL.addColorStop(1,"#202a3d");
+  c.fillStyle=armL;rounded(c,-8,0,16,58,8);c.fill();
+  c.fillStyle="#e2c0b4";c.beginPath();c.arc(0,59,8,0,Math.PI*2);c.fill();c.restore();
+  c.save();
+  c.translate(42,-66);c.rotate(.035-step*.008);
+  c.fillStyle="#3d4d68";rounded(c,-8,0,16,58,8);c.fill();
+  c.fillStyle="#d8b7ad";c.beginPath();c.arc(0,59,8,0,Math.PI*2);c.fill();c.restore();
+
+  // torso
+  drawBody(c,step,sway,false);
+
+  // head
+  const skin=c.createRadialGradient(-12,-142,4,10,-119,52);
+  skin.addColorStop(0,"#f4d9cc");skin.addColorStop(.72,"#d1aaa0");skin.addColorStop(1,"#a97d7d");
+  c.fillStyle=skin;c.beginPath();c.ellipse(0,-128,41,47,0,0,Math.PI*2);c.fill();
+
+  // neck
+  c.fillStyle="#c2938c";rounded(c,-13,-94,26,18,7);c.fill();
+
+  // hair mass
+  c.fillStyle="#171821";
+  c.beginPath();
+  c.moveTo(-43,-132);c.quadraticCurveTo(-43,-179,-5,-184);
+  c.quadraticCurveTo(35,-186,45,-143);
+  c.quadraticCurveTo(42,-127,31,-115);
+  c.quadraticCurveTo(25,-144,11,-151);
+  c.quadraticCurveTo(-5,-136,-19,-133);
+  c.quadraticCurveTo(-32,-128,-43,-132);c.fill();
+  // individual fringe locks
+  c.fillStyle="#282936";
+  poly(c,[-41,-139,-22,-165,-11,-148,-19,-132]);c.fill();
+  poly(c,[-21,-145,-5,-169,5,-151,-3,-130]);c.fill();
+  poly(c,[0,-149,17,-168,25,-148,16,-128]);c.fill();
+  poly(c,[18,-146,34,-163,43,-140,30,-119]);c.fill();
+
+  // face
+  c.fillStyle="#191923";
+  if(dir==="left"){
+    c.beginPath();c.ellipse(-13,-125,4,6,0,0,Math.PI*2);c.fill();
+  }else if(dir==="right"){
+    c.beginPath();c.ellipse(13,-125,4,6,0,0,Math.PI*2);c.fill();
+  }else{
+    c.beginPath();c.ellipse(-15,-124,4,6,0,0,Math.PI*2);c.ellipse(15,-124,4,6,0,0,Math.PI*2);c.fill();
+  }
+  c.fillStyle="rgba(255,255,255,.75)";
+  if(dir==="left"){c.beginPath();c.arc(-14,-126,1.4,0,Math.PI*2);c.fill();}
+  else if(dir==="right"){c.beginPath();c.arc(12,-126,1.4,0,Math.PI*2);c.fill();}
+  else{c.beginPath();c.arc(-16,-126,1.4,0,Math.PI*2);c.arc(14,-126,1.4,0,Math.PI*2);c.fill();}
+  c.strokeStyle="rgba(92,54,60,.65)";c.lineWidth=2;c.beginPath();c.arc(0,-111,9,.15,Math.PI-.15);c.stroke();
+
+  // clothing highlights and collar
+  c.fillStyle="#8a9ab1";poly(c,[-17,-90,0,-76,17,-90,11,-66,-11,-66]);c.fill();
+  c.fillStyle="rgba(225,235,255,.2)";rounded(c,-30,-82,5,43,3);c.fill();
+
+  if(dir==="left"||dir==="right"){
+    c.globalAlpha=.16;c.fillStyle="#fff";c.fillRect(dir==="left"?-37:32,-80,4,45);c.globalAlpha=1;
+  }
+  c.restore();
+}
+
+function drawShoes(c:CanvasRenderingContext2D,step:number){
+  c.save();
+  c.translate(-18+step*.55,6);c.rotate(step*.008);
+  c.fillStyle="#242a38";rounded(c,-12,0,24,65,8);c.fillStyle="#080b12";rounded(c,-16,56,30,13,6);c.fill();
+  c.fillStyle="rgba(255,255,255,.14)";rounded(c,-9,7,15,3,2);c.fill();c.restore();
+  c.save();
+  c.translate(18-step*.55,6);c.rotate(-step*.008);
+  c.fillStyle="#202633";rounded(c,-12,0,24,65,8);c.fillStyle="#080b12";rounded(c,-15,56,30,13,6);c.fill();
+  c.fillStyle="rgba(255,255,255,.14)";rounded(c,-9,7,15,3,2);c.fill();c.restore();
+}
+
+function drawBody(c:CanvasRenderingContext2D,step:number,sway:number,back:boolean){
+  c.save();c.translate(sway,0);
+  const body=c.createLinearGradient(-42,-96,42,-10);
+  body.addColorStop(0,"#657794");body.addColorStop(.45,"#3d4d69");body.addColorStop(1,"#151e30");
+  c.fillStyle=body;rounded(c,-42,-96,84,92,17);c.fill();
+  c.fillStyle="#27344b";rounded(c,-34,-84,68,15,7);c.fill();
+  c.fillStyle="rgba(220,230,250,.18)";rounded(c,-28,-79,56,4,2);c.fill();
+  c.fillStyle="#121927";rounded(c,-50,-82,16,62,8);c.fill();rounded(c,34,-82,16,62,8);c.fill();
+  c.fillStyle="#aebbd0";poly(c,[-18,-91,0,-76,18,-91,10,-63,-10,-63]);c.fill();
+  c.restore();
+}
+function drawBackHair(c:CanvasRenderingContext2D){
+  c.fillStyle="#171821";c.beginPath();
+  c.moveTo(-43,-143);c.quadraticCurveTo(-40,-184,0,-186);
+  c.quadraticCurveTo(40,-184,43,-143);c.lineTo(32,-108);
+  c.quadraticCurveTo(22,-125,12,-134);c.lineTo(0,-115);c.lineTo(-12,-134);
+  c.quadraticCurveTo(-26,-122,-34,-108);c.closePath();c.fill();
+}
+function setHeroDir(dx:number,dy:number){
+  if(Math.abs(dx)>Math.abs(dy)) (window as any).__heroDir=dx<0?"left":"right";
+  else if(Math.abs(dy)>0) (window as any).__heroDir=dy<0?"up":"down";
 }
 function move(dx:number,dy:number){
+  setHeroDir(dx,dy);
   if(scene!=="world"||!dialogue.classList.contains("hidden"))return;
   playerX=clamp(playerX+dx,70,1530);playerY=clamp(playerY+dy,400,800);
   moving=true;lastMoveTime=performance.now();walkTime+=Math.PI/2;lastMoveTime=performance.now();
